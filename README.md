@@ -1,14 +1,17 @@
 # Wiki Application For Tunes
 
+[comment]: # (Add image logo)
 [comment]: # (Todo. Add badges, particularlly build status, docs coverage and test coverage.)
 
-`waft` facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
+`waft` is a [textual user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) application that facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
 ## Installation
-Todo. May look having user download repository or otherwise we may also opt to host the application as a website.
+[comment]: # (Todo. May look having user download repository or otherwise we may also opt to host the application as a website.)
+Installation instructions will be published once deployment infrastructure is finalized.
 ## Usage
-Todo.
+Usage instructions will be provided once the command-line interface and core workflows are finalized.
 ## Implementation Details
-Todo. This section should contain an explanation of both the Entity Relation diagram of our database, as well as the implementation of the Elm design Pattern for our front end logic.
+[comment]: # (Todo. This section should contain an explanation of both the Entity Relation diagram of our database written in Mermaid, as well as the implementation of the Elm design Pattern for our front end logic.)
+This section will provide a detailed explanation of the database entity relationships and the application’s implementation of the Elm Architecture once design documentation is complete.
 ## Contribution Guide
 In order to establish consistency among contributors and aid reviewers in evaluating contributions, below we detail standards to serve these ends.
 ### Developer Tool Chain Resources
@@ -18,19 +21,23 @@ their usage in relation to this project, and links to their documentation:
 - [Python](https://docs.python.org/3.13/): Python is a dynamic programming language with various advantages that make it a good choice for the development of our application, primarily its robust ecosystem of well maintained libraries. Additionally, most of the core team posses at least intermediate facility with it. While Python 3.14 is stable at the time of writing, [3.13](https://docs.python.org/3/whatsnew/3.13.html) was chosen as it is the first version to offer the ability to disable the [GIL](https://wiki.python.org/moin/GlobalInterpreterLock).
 - [Mamba](https://mamba.readthedocs.io/en/latest/index.html): When attempting to develop in Python, it is important to keep package and library versions consistent across machines, for which [environment](https://docs.python.org/3/library/venv.html) managers are helpful.
     - [Textual](https://textual.textualize.io/): Textual is a Python framework that allows us to create a textual user interface using pre-made widget components, with great asynchronous support. Additionally, applications developed with Textual are rather readily converted into websites, furthering the accessibility of our application.
-- [pudb](https://documen.tician.de/pudb/): A great and versatile step-by-step terminal debugger.
-- [Black](https://black.readthedocs.io/en/stable/): Black is a code formatter that adheres to the Pythonic standard set out in [PEP 8](https://peps.python.org/pep-0008/).
-- [mypy](https://mypy-lang.org/): `mypy` allows us to check for type consistency, letting us catch a whole swath of tricky runtime errors.
+    - [pudb](https://documen.tician.de/pudb/): A great and versatile step-by-step terminal debugger.
+    - [Black](https://black.readthedocs.io/en/stable/): `black` is a code formatter that adheres to the Pythonic standard set out in [PEP 8](https://peps.python.org/pep-0008/).
+    - [flake8](https://flake8.pycqa.org/en/latest/): A style guide enforcement tool combining `pyflakes`, `pycodestyle`, and `mccabe` to flag both style and complexity issues.
+    - [pylint](https://pylint.readthedocs.io/en/latest/): Performs static code analysis to detect logic errors, unused variables, and code smells.
+    - [mypy](https://mypy-lang.org/): `mypy` allows us to check for type consistency, letting us catch a whole swath of tricky runtime errors.
+    - [pytest](https://docs.pytest.org/en/stable/): Python’s most popular testing framework, providing fixtures, assertions, and plugin support for clean test design.
+    - [MKDocs](https://www.mkdocs.org/): A static website generator that creates documentation from [Markdown](https://www.markdownguide.org/) source files.
+    - [mkdocstrings](https://mkdocstrings.github.io/): An extension of MKDocs' capabilities, allowing us to collate inline documentation from Python source files directly.
+    - [Coverage.py](https://coverage.readthedocs.io/en/latest/): Measures test coverage and produces terminal and HTML reports, helping track which parts of the codebase are exercised by tests.
+    - [interrogate](https://interrogate.readthedocs.io/): Calculates documentation coverage, ensuring that functions, classes, and modules include appropriate docstrings.
 - [GitHub Actions](https://docs.github.com/en/actions): Actions workflows allow us to automate pull requests, code review tasks, deployments, documentation generation, etc. They are written in [YAML](https://yaml.org/).
-- [MKDocs](https://www.mkdocs.org/): A static website generator that creates documentation from [markdown](https://www.markdownguide.org/) source files.
-- [mkdocstrings](https://mkdocstrings.github.io/): An extension of MKDocs' capabilities, allowing us to collate inline documentation from Python source files directly.
 ### Opening an Issue
-All features, enhancements, and bug reports **must** begin as a [Github Issue](https://docs.github.com/en/issues) submitted through our [Project Board](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects), in order to ensure that progress is visible and so and that work items can be prioritized and assigned efficiently. The steps for doing so as follows:
+All features, enhancements, and bug reports **must** begin as a [Github Issue](https://docs.github.com/en/issues) submitted through our [project board](https://github.com/users/me11203sci/projects/3/views/1), in order to ensure that progress is visible and so and that work items can be prioritized and assigned efficiently. The steps for doing so as follows:
 1. Begin by checking that a relevant issue does not already exist.
 1. Make sure to provide it with a clear and descriptive title.
-1. Select the appropriate label for your issue.
-    1. Feature/enhancements **must** employ the User Story template.
-1. Give it an appropriate priority level.
+1. Select the appropriate label for your issue. Features/enhancements **must** employ the User Story template; likewise for bug reports, use the Bug Report template. For documentation issues, the description may be left blank.
+1. Give it an appropriate priority level to ensure that more critical issues are addressed expediently.
 1. Estimate the number of story points according to the following table:
     |Points|Meaning|Example|
     |:----:|:-----:|:-----:|
@@ -40,17 +47,24 @@ All features, enhancements, and bug reports **must** begin as a [Github Issue](h
     |5|Complex||
     |8|Large feature||
     |13+|Too large||
-1. Assign yourself if you intend to work on the issue; otherwise leave it unassigned for triage.
+1. Assign the issue to yourself if you intend to work on the issue; otherwise leave it unassigned for triage.
+
+> [!NOTE]
+> It may be nessessary to take a large issue and repeat the issue creation process until it is broken up into more managable tasks.
 
 After this, proceed to create a local working branch title composed of the your last name (lowercase) and a brief description of the issue you are working on (in [Pascal Case](https://wiki.c2.com/?PascalCase)), for example `dennison/SpotifyAPISearch`.
 ### Code Style Guide
-Programming paradigm.
+Programming paradigm. Textual uses OOP, otherwise we will try to use FP or DOP.
 
 Adherence to design patterns.
 
+mypy. type enforcement.
+
 Formatting using Black.
 
-flake8. pylint.
+flake8. pylint. 
+
+testing and documentation.
 ### Commit Style Guide
 For this project, we have attempted to follow the [guidance](https://cbea.ms/git-commit/) outlined by [cbeams](https://cbea.ms/author/cbeams/), which can be summarized in the following 7 rules:
 1. Separate subject from body with a blank line.
@@ -61,7 +75,15 @@ For this project, we have attempted to follow the [guidance](https://cbea.ms/git
 6. Wrap the body at 72 characters.
 7. Use the body to explain *what* the commit accomplishes and *why*.
 ### Pull Request Review
-mypy.
+Once you are ready to merge your contributions into the codebase, begin a pull request to have a core team member review your contribution. As outlined in [this guide from Google](https://google.github.io/eng-practices/review/reviewer/standard.html), reviewers should rely on metrics (for this we employ Github Actions to run the aforementioned code analysis tools) and design principles. The following checklist is provided for your convinence:
+- [ ] Begin by verifying that the branch name adheres to the standard: `[lastname]/[PascalCaseDescription]`.
+- [ ] Ensure that all commits follow the commit style guide.
+- [ ] Verify error handling and logging are appropriate and consistent with existing conventions.
+- [ ] Confirm that code passes static analysis (using `black`, `flake8`, `pylint`, `mypy`.)
+- [ ] Check that tests pass and coverage thresholds are maintained (using `pytest` and `Coverage.py`.)
+- [ ] Ensure that documentation coverage remains above the acceptable thresholds (using `interrogate`.) Review these documentation updates, ensuring docstrings are consistent and clear.
+- [ ] Assess whether naming, readability, and modularity meet project standards.
+Should one deem that accepting the pull request under evaluation would be detrimental to the health of the codebase, propose specific comments that instruct the author of the contribution on how they could go about addressing your concerns.
 
 Once code receives the manual approval of at least one other core team member, it is acceptable to merge onto the `master` branch.
 ## Core Development Team
