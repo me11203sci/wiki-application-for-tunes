@@ -1,6 +1,9 @@
 # Wiki Application For Tunes
 
-[comment]: # (Add image logo)
+<p align="center">
+    <img height=260 width=600 src="media/pnuemy.svg">
+</p>
+
 [comment]: # (Todo. Add badges, particularlly build status, docs coverage and test coverage.)
 
 `waft` is a [textual user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) application that facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
@@ -58,11 +61,11 @@ To maintain consistency, readability, and long-term maintainability across the c
 
 `waft` adopts a hybrid programming paradigm. Textual adheres to [object oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) principles, as components and widgets lend themselves well to encapsulation. By contrast, we otherwise implement application logic and data transformation using [functional programming](https://en.wikipedia.org/wiki/Functional_programming) and [data oriented programming](https://en.wikipedia.org/wiki/Data-oriented_design) principles respectively.
 
-We advise contributors to follow established design and architectural conventions, this can primarily be seen through the aforementioned used of the Model-Update-View utilized within the application logic. For other aspects of the project, it is advisable to refer to the [Refactoring Guru](https://refactoring.guru/design-patterns) online guide to design patterns and explanation.
+We advise contributors to follow established design and architectural conventions, this can primarily be seen through the aforementioned used of the Model-Update-View utilized within the application logic. For other aspects of the project, it is advisable to refer to the [Refactoring Guru](https://refactoring.guru/design-patterns) online guide in order to reference design patterns and their explanations.
 
 Code quality is maintained through a suite of automated tools integrated into our development workflow. All functions and classes must include explicit type hints validated with `mypy`, ensuring type consistency and early detection of logic errors. Source files need to be formatted with `black`, which enforces a uniform code style across the repository. Before opening a pull request, contributors must run `flake8` and `pylint` to identify unused imports, complexity issues, and potential code smells.
 
-Tests should be written with `pytest` and measured using `Coverage.py` to ensure that new code maintains or improves overall coverage thresholds. In parallel, all public modules, classes, and functions must include clear and descriptive docstrings following the conventions laid out by the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#examples) convention. Documentation coverage is tracked with `interrogate`, ensuring that the codebase remains both verifiable and intelligible.
+Tests should be written with `pytest` and measured using `Coverage.py` to ensure that new code maintains or improves overall coverage thresholds. In parallel, all public modules, classes, and functions must include clear and descriptive docstrings following the conventions laid out by the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#overview) convention. Documentation coverage is tracked with `interrogate`, ensuring that the codebase remains both verifiable and intelligible.
 
 All of these checks are automated in the CI pipeline to ensure that every merge meets consistent standards of clarity, maintainability, and correctness.
 ### Commit Style Guide
