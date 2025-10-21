@@ -33,7 +33,7 @@ their usage in relation to this project, and links to their documentation:
     - [interrogate](https://interrogate.readthedocs.io/): Calculates documentation coverage, ensuring that functions, classes, and modules include appropriate docstrings.
 - [GitHub Actions](https://docs.github.com/en/actions): Actions workflows allow us to automate pull requests, code review tasks, deployments, documentation generation, etc. They are written in [YAML](https://yaml.org/).
 ### Opening an Issue
-All features, enhancements, and bug reports **must** begin as a [Github Issue](https://docs.github.com/en/issues) submitted through our [project board](https://github.com/users/me11203sci/projects/3/views/1), in order to ensure that progress is visible and so and that work items can be prioritized and assigned efficiently. The steps for doing so as follows:
+All features, enhancements, and bug reports **must** begin as a [Github Issue](https://docs.github.com/en/issues) submitted through our [project board](https://github.com/users/me11203sci/projects/3/views/1), in order to ensure that progress is visible and so and that work items can be prioritized and assigned efficiently. The steps for doing so are as follows:
 1. Begin by checking that a relevant issue does not already exist.
 1. Make sure to provide it with a clear and descriptive title.
 1. Select the appropriate label for your issue. Features/enhancements **must** employ the User Story template; likewise for bug reports, use the Bug Report template. For documentation issues, the description may be left blank.
@@ -50,21 +50,21 @@ All features, enhancements, and bug reports **must** begin as a [Github Issue](h
 1. Assign the issue to yourself if you intend to work on the issue; otherwise leave it unassigned for triage.
 
 > [!NOTE]
-> It may be nessessary to take a large issue and repeat the issue creation process until it is broken up into more managable tasks.
+> It may be necessary to take a large issue and repeat the issue creation process until it is broken up into more managable tasks.
 
 After this, proceed to create a local working branch title composed of the your last name (lowercase) and a brief description of the issue you are working on (in [Pascal Case](https://wiki.c2.com/?PascalCase)), for example `dennison/SpotifyAPISearch`.
 ### Code Style Guide
-Programming paradigm. Textual uses OOP, otherwise we will try to use FP or DOP.
+To maintain consistency, readability, and long-term maintainability across the codebase, contributors are expected to follow the coding principles stated here.
 
-Adherence to design patterns.
+`waft` adopts a hybrid programming paradigm. Textual adheres to [object oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) principles, as components and widgets lend themselves well to encapsulation. By contrast, we otherwise implement application logic and data transformation using [functional programming](https://en.wikipedia.org/wiki/Functional_programming) and [data oriented programming](https://en.wikipedia.org/wiki/Data-oriented_design) principles respectively.
 
-mypy. type enforcement.
+We advise contributors to follow established design and architectural conventions, this can primarily be seen through the aforementioned used of the Model-Update-View utilized within the application logic. For other aspects of the project, it is advisable to refer to the [Refactoring Guru](https://refactoring.guru/design-patterns) online guide to design patterns and explanation.
 
-Formatting using Black.
+Code quality is maintained through a suite of automated tools integrated into our development workflow. All functions and classes must include explicit type hints validated with `mypy`, ensuring type consistency and early detection of logic errors. Source files need to be formatted with `black`, which enforces a uniform code style across the repository. Before opening a pull request, contributors must run `flake8` and `pylint` to identify unused imports, complexity issues, and potential code smells.
 
-flake8. pylint. 
+Tests should be written with `pytest` and measured using `Coverage.py` to ensure that new code maintains or improves overall coverage thresholds. In parallel, all public modules, classes, and functions must include clear and descriptive docstrings following the conventions laid out by the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#examples) convention. Documentation coverage is tracked with `interrogate`, ensuring that the codebase remains both verifiable and intelligible.
 
-testing and documentation.
+All of these checks are automated in the CI pipeline to ensure that every merge meets consistent standards of clarity, maintainability, and correctness.
 ### Commit Style Guide
 For this project, we have attempted to follow the [guidance](https://cbea.ms/git-commit/) outlined by [cbeams](https://cbea.ms/author/cbeams/), which can be summarized in the following 7 rules:
 1. Separate subject from body with a blank line.
@@ -75,17 +75,18 @@ For this project, we have attempted to follow the [guidance](https://cbea.ms/git
 6. Wrap the body at 72 characters.
 7. Use the body to explain *what* the commit accomplishes and *why*.
 ### Pull Request Review
-Once you are ready to merge your contributions into the codebase, begin a pull request to have a core team member review your contribution. As outlined in [this guide from Google](https://google.github.io/eng-practices/review/reviewer/standard.html), reviewers should rely on metrics (for this we employ Github Actions to run the aforementioned code analysis tools) and design principles. The following checklist is provided for your convinence:
+Once you are ready to merge your contributions into the codebase, begin a pull request to have a core team member review your contribution. As outlined in [this guide from Google](https://google.github.io/eng-practices/review/reviewer/standard.html), reviewers should rely on metrics (for this we employ Github Actions to run the aforementioned code analysis tools) and design principles over prefernces. The following checklist is provided for your convinence:
 - [ ] Begin by verifying that the branch name adheres to the standard: `[lastname]/[PascalCaseDescription]`.
 - [ ] Ensure that all commits follow the commit style guide.
 - [ ] Verify error handling and logging are appropriate and consistent with existing conventions.
 - [ ] Confirm that code passes static analysis (using `black`, `flake8`, `pylint`, `mypy`.)
 - [ ] Check that tests pass and coverage thresholds are maintained (using `pytest` and `Coverage.py`.)
-- [ ] Ensure that documentation coverage remains above the acceptable thresholds (using `interrogate`.) Review these documentation updates, ensuring docstrings are consistent and clear.
+- [ ] Ensure that documentation coverage remains above the acceptable thresholds (using `interrogate`.) Review these documentation updates, ensuring docstrings are consistent, accurate, and clear.
 - [ ] Assess whether naming, readability, and modularity meet project standards.
-Should one deem that accepting the pull request under evaluation would be detrimental to the health of the codebase, propose specific comments that instruct the author of the contribution on how they could go about addressing your concerns.
+- [ ] Evaluate whether the code adheres to the design principles stated above.
+- [ ] If applicable, evaluate whether the related issue's acceptance criteria are met.
 
-Once code receives the manual approval of at least one other core team member, it is acceptable to merge onto the `master` branch.
+Should one deem that accepting the pull request under evaluation would be detrimental to the health of the codebase, propose specific comments that instruct the author of the contribution on how they could go about addressing your concerns. Once code receives the manual approval of at least one other core team member, it is acceptable to merge onto the `master` branch.
 ## Core Development Team
 **User Interface Design Lead:** [Melesio Albavera](https://github.com/me11203sci/)
 
