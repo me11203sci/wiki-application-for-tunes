@@ -1,5 +1,8 @@
 name: Pull Request Report Generation Workflow
 
+permissions:
+  pull-requests: write
+
 on:
     pull_request:
       branches: [master]
@@ -21,51 +24,55 @@ jobs:
           environment-file: environment.yml
           activate-environment: waft-dev
 
+      - name: Start Log File
+        run: echo "=========================================[CODE ANALYSIS]===========================================" > analysis.log
+
       - name: Run Black Formatter
         run: |
-          echo "====[BLACK]========================================================================================================" >> analysis.log
+          echo "////[BLACK]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           black --check src/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run isort Formatter
         run: |
-          echo "====[ISORT]========================================================================================================" >> analysis.log
+          echo "////[ISORT]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           isort src/ --check-only --verbose >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run flake8 for Style Compliance
         run: |
-          echo "====[FLAKE8]=======================================================================================================" >> analysis.log
+          echo "////[FLAKE8]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           flake8 --verbose --docstring-convention=numpy src/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run mypy for Type Checking
         run: |
-          echo "====[MYPY]=========================================================================================================" >> analysis.log
+          echo "////[MYPY]/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           mypy src/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run pytest
         run: |
-          echo "====[PYTEST]=======================================================================================================" >> analysis.log
+          echo "////[PYTEST]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           pytest >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run Coverage.py
         run: |
-          echo "====[COVERAGE.py]=================================================================================================" >> analysis.log
+          echo "////[COVERAGE]/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           coverage run >> analysis.log 2>&1
           coverage report >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run interrogate
         run: |
-          echo "====[INTERROGATE]=================================================================================================" >> analysis.log
+          echo "////[INTERROGATE]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           interrogate >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Output Log to Terminal
         run: |
+          echo "=========================================[END ANALYSIS]============================================" >> analysis.log
           cat analysis.log
 
       - name: Upload Analysis Report
@@ -75,31 +82,44 @@ jobs:
           name: analysis-report
           path: analysis.log
 
-  comment_on_pr:
-    runs-on: ubuntu-latest
-    needs: analysis
-
-    steps:
-      - uses: actions/checkout@v4
-
       - name: Comment on Pull Request
         if: always()
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const runId = process.env.GITHUB_RUN_ID;
             const { owner, repo } = context.repo;
             const prNumber = context.payload.pull_request?.number;
+
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber
+            });
+
+            const existing = comments.data.find(c => c.user.login === 'github-actions[bot]')
+            const fs = require('fs');
+            const runId = process.env.GITHUB_RUN_ID;
+
             if (!prNumber) {
               core.warning("No pull request context found; skipping comment.");
               return;
             }
-            const artifactUrl = `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
-            const commentBody = `A new code analysis report has been generated for this Pull Request: **[View the full report artifact](${artifactUrl})**`;
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: prNumber,
-              body: commentBody
-            });
+
+            const commentBody = fs.readFileSync('analysis.log', 'utf8') + "\n\n>[!NOTE]\n> Reviewers are to be sure to copy the checklist found in the [Pull Request Review section of the README](https://github.com/me11203sci/wiki-application-for-tunes?tab=readme-ov-file#pull-request-review) in their review comment.";
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
