@@ -1,0 +1,19 @@
+name: waft-dev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - black
+  - coverage
+  - flake8
+  - flake8-docstrings
+  - interrogate
+  - isort
+  - mypy
+  - pip
+  - pudb
+  - pycodestyle
+  - pydocstyle
+  - pylint
+  - pytest
+  - python=3.13

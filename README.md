@@ -44,16 +44,16 @@ All features, enhancements, and bug reports **must** begin as a [Github Issue](h
 1. Estimate the number of story points according to the following table:
     |Points|Meaning|Example|
     |:----:|:-----:|:-----:|
-    |1|Trivial change||
-    |2|Small task||
-    |3|Moderate|[#16](https://github.com/users/me11203sci/projects/3/views/1?pane=issue&itemId=134641535&issue=me11203sci%7Cwiki-application-for-tunes%7C16)|
-    |5|Complex||
-    |8|Large feature||
-    |13+|Too large||
+    |1|Trivial change|[]()|
+    |2|Small task|[]()|
+    |3|Moderate|[#25](https://github.com/users/me11203sci/projects/3/views/1?pane=issue&itemId=135011984&issue=me11203sci%7Cwiki-application-for-tunes%7C25)|
+    |5|Complex|[#27](https://github.com/users/me11203sci/projects/3/views/1?pane=issue&itemId=135014480&issue=me11203sci%7Cwiki-application-for-tunes%7C27)|
+    |8|Large feature|[#18](https://github.com/users/me11203sci/projects/3/views/1?pane=issue&itemId=134795797&issue=me11203sci%7Cwiki-application-for-tunes%7C18)|
+    |13+|Too large|[#23](https://github.com/users/me11203sci/projects/3/views/1?pane=issue&itemId=134888194&issue=me11203sci%7Cwiki-application-for-tunes%7C23)|
 1. Assign the issue to yourself if you intend to work on the issue; otherwise leave it unassigned for triage.
 
 > [!NOTE]
-> It may be necessary to take a large issue and repeat the issue creation process until it is broken up into more managable tasks.
+> It may be necessary to take a large issue and repeat the issue creation process until it is broken up into more manageable tasks. Most issues are ideally size once they correspond to at most a couple unit tests.
 
 After this, proceed to create a local working branch title composed of the your last name (lowercase) and a brief description of the issue you are working on (in [Pascal Case](https://wiki.c2.com/?PascalCase)), for example `dennison/SpotifyAPISearch`.
 ### Code Style Guide
@@ -78,7 +78,7 @@ For this project, we have attempted to follow the [guidance](https://cbea.ms/git
 6. Wrap the body at 72 characters.
 7. Use the body to explain *what* the commit accomplishes and *why*.
 ### Pull Request Review
-Once you are ready to merge your contributions into the codebase, begin a pull request to have a core team member review your contribution. As outlined in [this guide from Google](https://google.github.io/eng-practices/review/reviewer/standard.html), reviewers should rely on metrics (for this we employ Github Actions to run the aforementioned code analysis tools) and design principles over prefernces. The following checklist is provided for your convinence:
+Once you are ready to merge your contributions into the codebase, begin a pull request to have a core team member review your contribution. As outlined in [this guide from Google](https://google.github.io/eng-practices/review/reviewer/standard.html), reviewers should rely on metrics (for this we employ GitHub Actions to run the aforementioned code analysis tools) and design principles over preferences. The following checklist is provided for your convenience:
 - [ ] Begin by verifying that the branch name adheres to the standard: `[lastname]/[PascalCaseDescription]`.
 - [ ] Ensure that all commits follow the commit style guide.
 - [ ] Verify error handling and logging are appropriate and consistent with existing conventions.
