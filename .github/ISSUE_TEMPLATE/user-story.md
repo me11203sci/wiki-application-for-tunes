@@ -11,3 +11,6 @@ As a [*specific user type*], I want [*specific capability*], so that [*specific 
 
 **Acceptance Criteria**
 - [ ] Given [*context*], when [*action*], then [*outcome*]
+
+**Additional Notes**
+- For further relevant information.
