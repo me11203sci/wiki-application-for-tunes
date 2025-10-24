@@ -123,7 +123,43 @@ Documentation: https://numpydoc.readthedocs.io/en/latest/format.html#examples, h
 Commit Standards: https://cbea.ms/git-commit/
 
 ###### Database Architecture (Entity Relations)
-Mermaid diagram (Dennison Todo)
+Mermaid diagram:
+erDiagram
+    ARTIST {
+        string ID PK
+        string Name
+    }
+    TRACK {
+        string ID PK
+        string Name
+        date Release_Date
+        int Duration
+        boolean explicit
+    }
+    ALBUM {
+        string ID PK
+        string Name
+        string Cover_Image_Link
+    }
+    FILE {
+        string Hash PK
+        string Track_ID FK
+        string Source_Link
+    }
+    RECORDS {
+        string Artist_ID FK
+        string Track_ID FK
+    }
+    ON {
+        string Track_ID FK
+        string Album_ID FK
+        int TrackNumber
+    }
+    ARTIST ||--o{ RECORDS : ""
+    TRACK ||--|| RECORDS : ""
+    TRACK o|--|| FILE : ""
+    TRACK ||--|| ON : ""
+    ALBUM o|--o{ ON : ""
 
 ###### Application Logic
 TEA - https://guide.elm-lang.org/architecture/
