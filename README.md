@@ -124,6 +124,7 @@ Commit Standards: https://cbea.ms/git-commit/
 
 ###### Database Architecture (Entity Relations)
 Mermaid diagram:
+```mermaid
 erDiagram
     ARTIST {
         string ID PK
@@ -160,6 +161,7 @@ erDiagram
     TRACK o|--|| FILE : ""
     TRACK ||--|| ON : ""
     ALBUM o|--o{ ON : ""
+```
 
 ###### Application Logic
 TEA - https://guide.elm-lang.org/architecture/
