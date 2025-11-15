@@ -49,25 +49,20 @@ jobs:
         run: |
           echo "////[MYPY]/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
           mypy src/ >> analysis.log 2>&1
+          mypy tests/ >> analysis.log 2>&1
         continue-on-error: true
 
-      - name: Run pytest
+      - name: Run Pytest via Coverage.py
         run: |
-          echo "////[PYTEST]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
-          pytest >> analysis.log 2>&1
-        continue-on-error: true
-
-      - name: Run Coverage.py
-        run: |
-          echo "////[COVERAGE]/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
-          coverage run >> analysis.log 2>&1
+          echo "////[PYTEST & COVERAGE]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          coverage run --source=src/ -m pytest >> analysis.log 2>&1
           coverage report >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run interrogate
         run: |
           echo "////[INTERROGATE]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
-          interrogate >> analysis.log 2>&1
+          interrogate --verbose >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Output Log to Terminal
