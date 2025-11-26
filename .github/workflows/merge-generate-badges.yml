@@ -1,0 +1,81 @@
+name: 
+
+permissions:
+  pull-requests: write
+
+on:
+    merge:
+      branches: [master]
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest lxml
+          apt-get update
+          sudo apt-get install libxml2-utils
+
+      - name: Run tests and extract numbers
+        id: tests
+        run: |
+          pytest --junitxml=results.xml || true
+
+          TOTAL=$(xmllint --xpath "count(/testsuites/testsuite/testcase)" results.xml)
+          PASSING=$(xmllint --xpath "count(/testsuites/testsuite/testcase[not(failure)])" results.xml)
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passing=$PASSING" >> $GITHUB_OUTPUT
+          
+      - name: Compute percentage and color
+        id: color
+        run: |
+          TOTAL=${{ steps.tests.outputs.total }}
+          PASS=${{ steps.tests.outputs.passing }}
+
+          if [ "$TOTAL" -eq 0 ]; then
+            PERCENT=0
+          else
+            PERCENT=$(( 100 * $PASS / $TOTAL ))
+          fi
+
+          # Set color thresholds
+          if [ "$PERCENT" -lt 75 ]; then
+            COLOR="red"
+          elif [ "$PERCENT" -lt 90 ]; then
+            COLOR="orange"
+          else
+            COLOR="brightgreen"
+          fi
+
+          COMBINED_MSG="${PERCENT}% (${PASS}/${TOTAL})"
+          echo "combined_msg=$COMBINED_MSG" >> $GITHUB_OUTPUT
+          echo "percent=$PERCENT" >> $GITHUB_OUTPUT
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+
+      - name: Update Gist JSON for Shields.io
+        run: |
+          cat > badge.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "tests",
+            "message": "${{ steps.color.outputs.combined_msg }}",
+            "color": "${{ steps.color.outputs.color }}"
+          }
+          EOF
+
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GIST_TOKEN }}" \
+            -d "{\"files\": {\"test_badge.json\": {\"content\": \"$(sed 's/"/\\"/g' badge.json)\"}}}" \
+            https://api.github.com/gists/<GIST_ID>
