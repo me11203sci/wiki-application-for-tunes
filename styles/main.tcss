@@ -1,0 +1,42 @@
+$text_color: darkorchid;
+
+Screen
+{
+  align: center middle;
+}
+#logo
+{
+  color: $text_color;
+  text-align: center;
+  text-overflow: clip;
+  text-wrap: nowrap;
+  max-width: 87;
+}
+Horizontal
+{
+  align: center middle;
+}
+Vertical
+{
+  align: center middle;
+}
+Input
+{
+  background: 0%;
+  border: round $text_color;
+  color: $text_color;
+  max-width: 87;
+}
+StatusBar
+{
+  color: $text_color;
+  background: 0%;
+  border: round $text_color;
+  height: 3;
+  overflow: hidden;
+}
+Footer
+{
+  background: 0%;
+}
+

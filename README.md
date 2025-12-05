@@ -5,8 +5,7 @@
 </p>
 
 [comment]: # (Todo. Add badges, particularlly build status, test status, docs coverage and test coverage.)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)]()
-![PyTests]()
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass@wiki-app-for-tunes.5juoymq.mongodb.net/)
 
 `waft` is a [textual user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) application that facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
 ## Installation
