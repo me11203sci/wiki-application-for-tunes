@@ -2,10 +2,13 @@
 
 <p align="center">
     <img height=260 width=600 src="media/pnuemy.svg">
+    <br>
+    <a href="mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass@wiki-app-for-tunes.5juoymq.mongodb.net/">
+        <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white">
+    </a>
 </p>
 
 [comment]: # (Todo. Add badges, particularlly build status, test status, docs coverage and test coverage.)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass@wiki-app-for-tunes.5juoymq.mongodb.net/)
 
 `waft` is a [textual user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) application that facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
 ## Installation
@@ -54,34 +57,6 @@ erDiagram
     TRACK ||--|| ON : ""
     ALBUM o|--o{ ON : ""
 ```
+TEA - https://guide.elm-lang.org/architecture/
 ## Contribution Guide
 Check out our [Contribution Guide](CONTRIBUTING.md) for more information on how to contribute to the project.
-
-> [!NOTE]
-> All H6 headers will not be present in final version of this document, as they are scratch notes for the core team, but will hopefully be properly integrated into the rest of the document **before** the minimum viable product release.
-
-###### Technological Stack
-Database - MongoDB
-Metadata - Spotify API
-Audio Data Source - YouTube API
-ytdlp - Obtaining Audio Data
-Langauge - Python 3.13
-    - id3tags: eye3D/music_tag
-    - TUI: Textual
-    - requests
-Debug: pdb
-Sound: pydub
-CD/CI: Github Actions
-Testing: pytest, hypothesis (?)
-Code Style: https://github.com/whyjay17/Pyscent?tab=readme-ov-file#static-code-analysis-tools
-
-###### Standards
-Coding standards: pep 8, black
-Documentation: https://numpydoc.readthedocs.io/en/latest/format.html#examples, https://peps.python.org/pep-0257/
-Commit Standards: https://cbea.ms/git-commit/
-
-###### Database Architecture (Entity Relations)
-Mermaid diagram:
-
-###### Application Logic
-TEA - https://guide.elm-lang.org/architecture/
