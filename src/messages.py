@@ -45,7 +45,7 @@ class UpdateStatus(Message):
     """
 
     def __init__(self, text: str) -> None:
-        """Construct a status-update message.
+        """Construct a status update message.
 
         Parameters
         ----------
@@ -58,8 +58,17 @@ class UpdateStatus(Message):
 
 
 class ValidCredentials(Message):
-    """TODO."""
+    """Message indicating that provided credentials have passed validation.
+
+    This message is dispatched when the user's submitted credentials are determined to
+    be valid, allowing the program to proceed to the Spotify A.P.I. search menu.
+    """
 
     def __init__(self) -> None:  # pylint: disable=useless-parent-delegation
-        """TODO."""
+        """Construct a credential validation message.
+
+        Notes
+        -----
+        Calling ``super().__init__()`` is required so that Textual correctly
+        """
         super().__init__()

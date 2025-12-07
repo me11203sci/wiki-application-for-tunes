@@ -100,8 +100,8 @@ class IntitialAuthenticationScreen(Screen):
     def compose(self) -> ComposeResult:
         """Construct and yield the widgets that make up the screen layout.
 
-        Returns
-        -------
+        Yields
+        ------
         ComposeResult
             An iterable container of Textual widgets, including the
             credential input fields, the application logo, the status
@@ -128,12 +128,25 @@ class IntitialAuthenticationScreen(Screen):
 
 
 class SpotifySearchScreen(Screen):
-    """TODO."""
+    """Screen for the Spotify A.P.I. search view.
+
+    This screen presents a minimal user interface for entering or initiating search
+    queries against the Spotify A.P.I.
+    """
 
     BINDING_GROUP_TITLE: str | None = "Spotify A.P.I. Search Screen"
 
     def compose(self) -> ComposeResult:
-        """TODO."""
+        """Construct and yield the widgets that make up the screen layout.
+
+        Yields
+        ------
+        ComposeResult
+            An iterable container of Textual widgets, including the
+            credential input fields, the application logo, the status
+            bar, and the footer.
+        """
+
         status_bar = StatusBar()
         yield Static("Hi :D")
         yield status_bar
