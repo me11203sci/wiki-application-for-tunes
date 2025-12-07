@@ -29,7 +29,7 @@ erDiagram
     TRACK {
         string ID PK
         string Name
-        date Release_Date
+        date ReleaseDate
         int Duration
         boolean explicit
     }
