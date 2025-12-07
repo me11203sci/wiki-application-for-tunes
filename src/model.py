@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 
+
 ######################################################
 # Name: AppState
 # Purpose: Enum to hold all possible model states
@@ -10,6 +11,7 @@ class AppState(Enum):
     UNAUTHENTICATED = auto()
     AUTHENTICATING = auto()
     AUTHENTICATED = auto()
+
 
 ######################################################
 # Name: Model
@@ -22,6 +24,7 @@ class Model:
     spotifyAuthenticated: bool
     youtubeAuthenticated: bool
 
+
 ######################################################
 # Name: initialModel
 # Description: Creates the model object
@@ -31,7 +34,7 @@ class Model:
 ######################################################
 def initialModel() -> Model:
     return Model(
-        state = AppState.UNAUTHENTICATED,
-        spotifyAuthenticated = False,
-        youtubeAuthenticated = False
+        state=AppState.UNAUTHENTICATED,
+        spotifyAuthenticated=False,
+        youtubeAuthenticated=False,
     )

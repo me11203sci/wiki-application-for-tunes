@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 ######################################################
 # Name: Message
 # Purpose: Enum to hold all possible messages
