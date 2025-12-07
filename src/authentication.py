@@ -6,6 +6,13 @@ a given access token is valid by making a test API call. It is designed
 for backend or utility scripts where you need to programmatically interact
 with Spotify's A.P.I.
 
+Functions
+---------
+get_spotify_access_token
+    Request and return a Spotify access token using client credentials.
+authenticate_spotify_access_token
+    Check if a Spotify access token works by performing a sample search
+
 Notes
 -----
 - The "get_spotify_access_token" function raises "requests.HTTPError" for
