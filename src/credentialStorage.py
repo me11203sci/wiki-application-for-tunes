@@ -1,5 +1,6 @@
 import keyring
 
+
 ######################################################
 # Name: KeyStorage
 # Purpose: Class for use in storing Tokens
@@ -7,7 +8,7 @@ import keyring
 ######################################################
 class KeyStorage:
     def __init__(self):
-        self.services = []    #List of services -> for use in the cleanTokens function
+        self.services = []  # List of services -> for use in the cleanTokens function
 
     ######################################################
     # Name: setToken
@@ -49,7 +50,6 @@ class KeyStorage:
     #       cluttered keyring
     ######################################################
     def cleanTokens(self):
-        for(service in self.services):
+        for service in self.services:
             cred = keyring.get_credentials(service, "")
             keyring.delete_password(service, cred.username)
-    

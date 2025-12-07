@@ -1,6 +1,7 @@
 from enum import Enum, auto
 from credentialStorage import KeyStorage
 
+
 ######################################################
 # Name: Event
 # Purpose: Enum to hold all possible event types
@@ -12,10 +13,12 @@ class Event(Enum):
     AUTHENTICATE_YOUTUBE = auto()
     AUTHENTICATION_FAILED = auto()
     STORE_KEYS = auto()
+    
+
 
 ######################################################
 # Name: handleEvents
-# Description: Event handler that will handle events 
+# Description: Event handler that will handle events
 #       that have been returned when updating the model
 # Input: Event of type enum Event
 # Output: N/A
@@ -25,14 +28,13 @@ class Event(Enum):
 #       API calls and other services.
 ######################################################
 def handleEvents(evnt: Event):
-    match evnt:
-        case Event.INVALID_MESSAGE:
+    """match evnt:
+    case Event.INVALID_MESSAGE:
 
-        case Event.AUTHENTICATE_SPOTIFY:
+    case Event.AUTHENTICATE_SPOTIFY:
 
-        case Event.AUTHENTICATE_YOUTUBE:
+    case Event.AUTHENTICATE_YOUTUBE:
 
-        case Event.AUTHENTICATION_FAILED:
+    case Event.AUTHENTICATION_FAILED:
 
-        case Event.STORE_KEYS:
-
+    case Event.STORE_KEYS:"""
