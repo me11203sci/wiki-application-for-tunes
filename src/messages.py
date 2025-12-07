@@ -55,3 +55,11 @@ class UpdateStatus(Message):
 
         super().__init__()
         self.text = text
+
+
+class ValidCredentials(Message):
+    """TODO."""
+
+    def __init__(self) -> None:  # pylint: disable=useless-parent-delegation
+        """TODO."""
+        super().__init__()

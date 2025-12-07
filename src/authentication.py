@@ -1,19 +1,10 @@
-"""
-credential_request_and_auth — A small module for obtaining and validating
-Spotify API tokens.
+"""A small module for obtaining and validating Spotify A.P.I. tokens.
 
 This module provides functions to: (1) retrieve an access token for the
-Spotify Web API using the Client Credentials flow, and (2) verify whether
+Spotify Web A.P.I. using the Client Credentials flow, and (2) verify whether
 a given access token is valid by making a test API call. It is designed
 for backend or utility scripts where you need to programmatically interact
-with Spotify's API.
-
-Functions
----------
-get_spotify_access_token
-    Request and return a Spotify access token using client credentials.
-authenticate_spotify_access_token
-    Check if a Spotify access token works by performing a sample search.
+with Spotify's A.P.I.
 
 Notes
 -----
@@ -25,13 +16,13 @@ Notes
 
 import base64
 from typing import Any, Dict
-from requests.models import Response
+
 import requests
+from requests.models import Response
 
 
-def get_spotify_access_token(client_id: str, client_secret: str) -> str:
-    """
-    Obtain an access token for the Spotify Web API using client credentials.
+async def get_spotify_access_token(client_id: str, client_secret: str) -> str:
+    """Obtain an access token for the Spotify Web API using client credentials.
 
     This function sends a request to Spotify's token endpoint with the provided
     "client_id" and "client_secret", and returns a valid bearer token that can
@@ -54,12 +45,6 @@ def get_spotify_access_token(client_id: str, client_secret: str) -> str:
     ------
     requests.HTTPError
         If the HTTP request to retrieve the token fails (non-2xx status code).
-
-    Examples
-    --------
-    >>> token = get_spotify_access_token("my_client_id", "my_client_secret")
-    >>> isinstance(token, str)
-    True
     """
     # Spotify token URL
     token_url = "https://accounts.spotify.com/api/token"
@@ -79,8 +64,7 @@ def get_spotify_access_token(client_id: str, client_secret: str) -> str:
     data: Dict[str, str] = {"grant_type": "client_credentials"}
 
     # Post HTTP request
-    resp: Response = requests.post(token_url, headers=headers, data=data,
-                                   timeout=20)
+    resp: Response = requests.post(token_url, headers=headers, data=data, timeout=20)
     resp.raise_for_status()  # Caller is responsible for error handling
 
     # Parse HTTP response
@@ -91,8 +75,7 @@ def get_spotify_access_token(client_id: str, client_secret: str) -> str:
 
 
 def authenticate_spotify_access_token(access_token: str) -> bool:
-    """
-    Validate a Spotify access token by making a test search request.
+    """Validate a Spotify access token by making a test search request.
 
     This function sends a "search" request to the Spotify Web API using the
     provided "access_token" and checks whether the call succeeds and returns
@@ -115,18 +98,10 @@ def authenticate_spotify_access_token(access_token: str) -> bool:
     ------
     requests.HTTPError
         If the HTTP request fails (non-2xx response).
-
-    Examples
-    --------
-    >>> valid = authenticate_spotify_access_token("BQD...your_token_here...")
-    >>> isinstance(valid, bool)
-    True
     """
     search_url: str = "https://api.spotify.com/v1/search"
-    search_headers: Dict[str, str] = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    search_params: Dict[str, str] = {
+    search_headers: Dict[str, str] = {"Authorization": f"Bearer {access_token}"}
+    search_params: Dict[str, str | int] = {
         "q": "Beatles",  # search query
         "type": "track",  # search for tracks
         "limit": 5,  # number of results

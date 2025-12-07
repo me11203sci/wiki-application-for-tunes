@@ -6,13 +6,18 @@ user input, and emitting TEA messages that drive global state updates in
 the application.
 """
 
+from asyncio import gather
+from typing import Tuple
+
+from requests.models import HTTPError
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import Footer, Input
+from textual.widgets import Footer, Input, Static
 
-from messages import Authenticating, UpdateStatus
+from authentication import get_spotify_access_token
+from messages import Authenticating, UpdateStatus, ValidCredentials
 from model import ApplicationModel
 from widgets import Logo, StatusBar
 
@@ -79,6 +84,18 @@ class IntitialAuthenticationScreen(Screen):
         self.app.post_message(UpdateStatus("Submitting authentication requests..."))
 
         # Authentication logic (do so asynchronously).
+        try:
+            result: Tuple[str] = await gather(
+                get_spotify_access_token(client_id, client_secret)
+            )
+            print(result)
+        except HTTPError as exception:
+            print(exception)
+            self.app.post_message(UpdateStatus("Invalid credentials."))
+
+        self.app.post_message(Authenticating(False))
+        self.app.post_message(ValidCredentials())
+        self.app.post_message(UpdateStatus("Success."))
 
     def compose(self) -> ComposeResult:
         """Construct and yield the widgets that make up the screen layout.
@@ -106,5 +123,18 @@ class IntitialAuthenticationScreen(Screen):
         yield Horizontal(
             Vertical(Logo(id="logo"), client_id_box, client_secret_box, youtube_key_box)
         )
+        yield status_bar
+        yield Footer(show_command_palette=False)
+
+
+class SpotifySearchScreen(Screen):
+    """TODO."""
+
+    BINDING_GROUP_TITLE: str | None = "Spotify A.P.I. Search Screen"
+
+    def compose(self) -> ComposeResult:
+        """TODO."""
+        status_bar = StatusBar()
+        yield Static("Hi :D")
         yield status_bar
         yield Footer(show_command_palette=False)
