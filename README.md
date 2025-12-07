@@ -3,6 +3,7 @@
 <p align="center">
     <img height=260 width=600 src="media/pnuemy.svg">
     <br>
+    <br>
     <a href="mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass@wiki-app-for-tunes.5juoymq.mongodb.net/">
         <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white">
     </a>

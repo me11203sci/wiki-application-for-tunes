@@ -1,6 +1,10 @@
-""" """
+"""User interface screens for the `waft` application.
 
-from typing import List
+This module defines the interactive screens used throughout the `waft`
+application. Each screen is responsible for rendering widgets, collecting
+user input, and emitting TEA messages that drive global state updates in
+the application.
+"""
 
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -8,16 +12,20 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Footer, Input
 
-from model import ApplicationModel
 from messages import Authenticating, UpdateStatus
+from model import ApplicationModel
 from widgets import Logo, StatusBar
 
 
 class IntitialAuthenticationScreen(Screen):
-    """"""
+    """Screen for collecting initial authentication credentials.
+
+    This screen presents three input fields—client ID, client secret,
+    and a YouTube API key—along with keyboard bindings and a status bar.
+    """
 
     BINDING_GROUP_TITLE: str | None = "Initial Authentication Screen"
-    BINDINGS: List[Binding] = [
+    BINDINGS = [
         Binding(key="<c-q>", action="app.quit", description="Quit the application"),
         Binding(key="<tab>", action="app.focus_next", description="Focus next"),
         Binding(
@@ -28,16 +36,31 @@ class IntitialAuthenticationScreen(Screen):
     ]
 
     def render_from_model(self, model: ApplicationModel) -> None:
-        """"""
+        """Update widget states based on the current TEA model.
+
+        Parameters
+        ----------
+        model : ApplicationModel
+            The global application state used to determine which inputs
+            should be enabled or disabled.
+        """
 
         self.query_one("#client_id_box", Input).disabled = model.authenticating
         self.query_one("#client_secret_box", Input).disabled = model.authenticating
         self.query_one("#youtube_key_box", Input).disabled = model.authenticating
 
     async def on_input_submitted(self) -> None:
-        """TODO."""
+        """Fire when a user hits <enter>/<c-m> or clicks the button in the ::Footer::.
 
-        if self.app.model.authenticating:
+        Notes
+        -----
+        Authentication itself is performed outside this screen; the
+        screen only gathers inputs and dispatches messages.
+        """
+
+        # I only used the `mypy` ignore because all solutions I could think of
+        # created cyclical imports.
+        if self.app.model.authenticating:  # type: ignore[attr-defined]
             return
 
         # Poll input values.
@@ -45,20 +68,28 @@ class IntitialAuthenticationScreen(Screen):
         client_secret: str = self.query_one("#client_secret_box", Input).value
         api_key: str = self.query_one("#youtube_key_box", Input).value
 
-        # .
+        # Check that all credentials are provided, prompt user otherwise.
         if not (client_id and client_secret and api_key):
             self.app.post_message(UpdateStatus("Please provide valid credentials."))
             return
 
-        # .
+        # Disable input fields and block new requests.
         self.app.post_message(Authenticating(True))
 
         self.app.post_message(UpdateStatus("Submitting authentication requests..."))
 
-        # await
+        # Authentication logic (do so asynchronously).
 
     def compose(self) -> ComposeResult:
-        """"""
+        """Construct and yield the widgets that make up the screen layout.
+
+        Returns
+        -------
+        ComposeResult
+            An iterable container of Textual widgets, including the
+            credential input fields, the application logo, the status
+            bar, and the footer.
+        """
 
         client_id_box = Input(id="client_id_box", placeholder="Client ID")
         client_secret_box = Input(
