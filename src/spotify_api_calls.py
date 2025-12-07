@@ -2,8 +2,7 @@
 Spotify Web API data models and request helpers.
 
 This module provides typed container classes and helper functions for
-interactingwith the Spotify Web API. It includes dataclasses for album,
-artist, track, andfull metadata representations, as well as higher-level
+interactingwith the Spotify Web API. It includes  higher-level
 utilities for searching tracks and retrieving detailed metadata. Parsing
 helpers convert raw Spotify API JSON into strongly typed Python objects
 suitable for UI display or downstream processing.
@@ -13,198 +12,22 @@ validation, raising informative exceptions for invalid parameters, network
 issues, or non-successful HTTP responses. Actual error handling is left to
 caller.
 
-Contents
---------
-Classes
-    Album
-        Basic album information and image URL.
-    Artist
-        Representation of a contributing artist.
-    Track
-        Detailed track-level metadata.
-    FullMetadata
-        Unified container combining album, artists, and track information.
-    DisplayedTrack
-        Simplified view used for search results or selection UIs.
-
-Functions
-    spotify_search
-        Perform a Spotify track search and return parsed display objects.
-    get_metadata
-        Retrieve full metadata for a specific track ID.
-    parse_tracks_from_json
-        Convert raw Spotify search response JSON into DisplayedTrack objects.
-
 Notes
 -----
 All functions require a valid Spotify OAuth Bearer token. The user is
 responsible for managing token expiration and refresh.
-
-Examples
---------
-Search for a track:
-
->>> results = spotify_search("Free Bird", bearer="ABC123", limit=5)
->>> results[0].title
-'Free Bird'
-
-Retrieve full metadata:
-
->>> meta = get_metadata(results[0].track_id, bearer="ABC123")
->>> meta.track.name
-'Free Bird'
 """
 
-from typing import Dict, List, Any
-from dataclasses import dataclass
+from typing import Any, Dict, List
+
 import requests
 from requests.models import Response
 
-
-@dataclass
-class Album:
-    """
-    Album container.
-
-    Represents basic album information returned from Spotify.
-
-    Attributes
-    ----------
-    album_name : str
-        The name of the album.
-    image_url : str
-        URL linking to the Spotify album cover image.
-    """
-    album_name: str
-    image_url: str
-
-    def __init__(self, album_name, image_url):
-        self.album_name = album_name
-        self.image_url = image_url
+from spotify_data_classes import (Album, Artist, DisplayedTrack, FullMetadata,
+                                  Track)
 
 
-@dataclass
-class Artist:
-    """
-    Artist container.
-
-    Represents a single contributing artist.
-
-    Attributes
-    ----------
-    artist_name : str
-        The artist's display name.
-    """
-    artist_name: str
-
-    def __init__(self, artist_name):
-        self.artist_name = artist_name
-
-
-@dataclass
-class Track:
-    """
-    Track metadata.
-
-    Stores detailed track-level fields such as duration, explicit flag,
-    release date, and ordering within the album.
-
-    Attributes
-    ----------
-    duration_ms : int
-        Duration of the track in milliseconds.
-    explicit : bool
-        Whether the track is marked explicit.
-    name : str
-        Track title.
-    release_date : str
-        The track's release date (ISO string).
-    track_number : int
-        Track's position within the album.
-    """
-    duration_ms: int
-    explicit: bool
-    name: str
-    release_date: str
-    track_number: int
-
-    def __init__(self, duration_ms, explicit, name,
-                 release_date, track_number):
-        self.duration_ms = duration_ms
-        self.explicit = explicit
-        self.name = name
-        self.release_date = release_date
-        self.track_number = track_number
-
-
-@dataclass
-class FullMetadata:
-    """
-    Full track metadata wrapper.
-
-    Bundles album info, artist list, and detailed track fields into
-    a unified container.
-
-    Attributes
-    ----------
-    album : Album
-        Album metadata object.
-    artists : List[Artist]
-        List of contributing artists.
-    track : Track
-        Track-level metadata object.
-    """
-    album: Album
-    artists: List[Artist]
-    track: Track
-
-    def __init__(self, album, artists, track):
-        self.album = album
-        self.artists = artists
-        self.track = track
-
-
-@dataclass
-class DisplayedTrack:
-    """
-    Container for displaying simplified Spotify track metadata.
-
-    This dataclass stores a compact, user-facing representation of a Spotify
-    track, including its title, primary artist, album name, duration, and
-    track ID. It is primarily used after parsing search results or metadata
-    responses to prepare structured data for UI display when a user
-    selects their desired track.
-
-    Attributes
-    ----------
-    title : str
-        The track title as shown on Spotify.
-    artist : str
-        The primary artist's name. May include "and Others" if
-        multiple artists contributed to the track.
-    album : str
-        The album name from which the track originates.
-    duration : str
-        The track's duration, typically expressed in milliseconds.
-    track_id : str
-        The unique Spotify track identifier.
-    """
-    title: str
-    artist: str
-    album: str
-    duration: str
-    track_id: str
-
-    def __init__(self, title, artist, album, duration, track_id):
-        self.title = title
-        self.artist = artist
-        self.album = album
-        self.duration = duration
-        self.track_id = track_id
-
-
-def parse_tracks_from_json(json_object: Dict[str, Any]
-                           ) -> List[DisplayedTrack]:
+def parse_tracks_from_json(json_object: Dict[str, Any]) -> List[DisplayedTrack]:
     """
     Parse Spotify search JSON results into a list of `DisplayedTrack` objects.
 
@@ -234,17 +57,9 @@ def parse_tracks_from_json(json_object: Dict[str, Any]
     TypeError
         If the structure of the JSON object is not as expected or `json_object`
         is not a dictionary.
-
-    Examples
-    --------
-    >>> response = spotify_search("Free Bird", bearer)
-    >>> tracks = parse_tracks_from_json(response)
-    >>> print(tracks[0].track_name)
-    "Free Bird"
-    >>> track_metadata = get_metadata(tracks[0].track_id, bearer)
     """
     tracks_list: List[Dict[str, Any]] = json_object["tracks"]["items"]
-    ordered_data_list: List[tuple[str, str, str, str]] = []
+    ordered_data_list: List[DisplayedTrack] = []
     for track_object in tracks_list:
         album: Dict[str, Any] = track_object["album"]
         album_name: str = album["name"]
@@ -255,18 +70,18 @@ def parse_tracks_from_json(json_object: Dict[str, Any]
         artist_name = main_artist["name"]
         track_id: str = track_object["id"]
         if len(artists_list) > 1:
-            artist_name = artist_name + ' and Others'
+            artist_name = artist_name + " and Others"
         ordered_data_tuple: DisplayedTrack = DisplayedTrack(
-            track_name, artist_name, album_name, duration_ms, track_id)
+            track_name, artist_name, album_name, duration_ms, track_id
+        )
         ordered_data_list.append(ordered_data_tuple)
     return ordered_data_list
 
 
-def spotify_search(query: str, bearer: str, limit: int
-                   ) -> List[DisplayedTrack]:
+def spotify_search(query: str, bearer: str, limit: int) -> List[DisplayedTrack]:
     """
     Perform a robust Spotify Search API request for tracks using a query.
-    ----------
+
     This function queries the Spotify Web API's `/v1/search` endpoint with
     a user-provided search query and returns raw JSON search results. It
     includes defensive input validation, HTTP error handling, and network
@@ -305,14 +120,13 @@ def spotify_search(query: str, bearer: str, limit: int
     params: Dict[str, str] = {
         "q": f"track:{query}",  # NOTE: For not, this only searches tracks
         "type": "track",
-        "limit": str(limit)
+        "limit": str(limit),
     }
-    headers: Dict[str, str] = {
-        "Authorization": f"Bearer {bearer}"
-    }
+    headers: Dict[str, str] = {"Authorization": f"Bearer {bearer}"}
 
-    response: Response = requests.get(base_url, headers=headers,
-                                      params=params, timeout=60)
+    response: Response = requests.get(
+        base_url, headers=headers, params=params, timeout=60
+    )
     response.raise_for_status()  # raises error for non-200 responses
 
     tracks_list: List[DisplayedTrack] = parse_tracks_from_json(response.json())
@@ -414,15 +228,14 @@ def parse_track_data(response_json: Dict[str, Any]) -> Track:
     album: Dict[str, Any] = response_json["album"]
     release_date: str = album["release_date"]  # NOTE: This is from Album.
     track_number: int = response_json["track_number"]
-    track_data: Track = Track(duration_ms, explicit, name,
-                              release_date, track_number)
+    track_data: Track = Track(duration_ms, explicit, name, release_date, track_number)
     return track_data
 
 
 def get_metadata(track_id: str, bearer: str) -> FullMetadata:
     """
     Fetch metadata for a specific Spotify track using its track ID.
-    ---------
+
     This function sends a GET request to the Spotify Web API's track
     endpoint and returns the raw JSON metadata for the given track.
     It creates and sends the HTTP request and raises an exception if
@@ -463,13 +276,10 @@ def get_metadata(track_id: str, bearer: str) -> FullMetadata:
     if not bearer:
         raise ValueError("bearer token cannot be empty.")
     url = f"https://api.spotify.com/v1/tracks/{track_id}"
-    headers: Dict[str, str] = {
-        "Authorization": f"Bearer {bearer}"
-    }
+    headers: Dict[str, str] = {"Authorization": f"Bearer {bearer}"}
 
     # Send request and validate HTTP status of response
-    response: Response = requests.get(
-        url, headers=headers, timeout=60)
+    response: Response = requests.get(url, headers=headers, timeout=60)
     response.raise_for_status()
     response_json: Dict[str, Any] = response.json()
 
@@ -479,7 +289,6 @@ def get_metadata(track_id: str, bearer: str) -> FullMetadata:
     track_data: Track = parse_track_data(response_json)
 
     # Combine Data Types
-    full_meta_data: FullMetadata = FullMetadata(album_data,
-                                                artists_data, track_data)
+    full_meta_data: FullMetadata = FullMetadata(album_data, artists_data, track_data)
 
     return full_meta_data
