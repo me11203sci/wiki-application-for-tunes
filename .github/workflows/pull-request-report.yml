@@ -25,43 +25,45 @@ jobs:
           activate-environment: waft-dev
 
       - name: Start Log File
-        run: echo "=========================================[CODE ANALYSIS]===========================================" > analysis.log
+        run: echo "# CODE ANALYSIS" > analysis.log
 
       - name: Run Black Formatter
         run: |
-          echo "////[BLACK]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## BLACK" >> analysis.log
           black --check src/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run isort Formatter
         run: |
-          echo "////[ISORT]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## ISORT" >> analysis.log
           isort src/ --check-only --verbose >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run flake8 for Style Compliance
         run: |
-          echo "////[FLAKE8]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## FLAKE8" >> analysis.log
           flake8 --verbose --docstring-convention=numpy src/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run mypy for Type Checking
         run: |
-          echo "////[MYPY]/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## MYPY" >> analysis.log
           mypy src/ >> analysis.log 2>&1
           mypy tests/ >> analysis.log 2>&1
         continue-on-error: true
 
       - name: Run Pytest via Coverage.py
         run: |
-          echo "////[PYTEST & COVERAGE]////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## PYTEST & COVERAGE" >> analysis.log
+          echo "```" >> analysis.log
           coverage run --source=src/ -m pytest >> analysis.log 2>&1
           coverage report >> analysis.log 2>&1
+          echo "```" >> analysis.log
         continue-on-error: true
 
       - name: Run interrogate
         run: |
-          echo "////[INTERROGATE]///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" >> analysis.log
+          echo "## INTERROGATE" >> analysis.log
           interrogate --verbose >> analysis.log 2>&1
         continue-on-error: true
 

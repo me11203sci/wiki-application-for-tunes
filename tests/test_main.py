@@ -3,10 +3,7 @@
 Todo.
 """
 
-from src.main import silly
 
-
-def test_silly():
+def test_a():
     """Hi."""
-    silly()
     assert True

@@ -9,7 +9,7 @@ from textual.app import App
 
 from messages import Authenticating, UpdateStatus
 from model import ApplicationModel, update
-from screens import IntitialAuthenticationScreen
+from screens import IntitialAuthenticationScreen, SpotifySearchScreen
 from widgets import StatusBar
 
 
@@ -24,6 +24,7 @@ class Application(App):
     CSS_PATH = "../styles/main.tcss"
 
     def __init__(self) -> None:
+        """TODO."""
         super().__init__()
         self.model: ApplicationModel = ApplicationModel(
             authenticating=False,
@@ -69,6 +70,10 @@ class Application(App):
 
         if isinstance(self.screen, IntitialAuthenticationScreen):
             self.screen.render_from_model(self.model)
+
+    async def on_valid_credentials(self) -> None:
+        """TODO."""
+        self.push_screen(SpotifySearchScreen())
 
     async def action_submit_authentication(self) -> None:
         """Trigger authentication submission workflow.

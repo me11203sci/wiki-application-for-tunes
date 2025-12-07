@@ -7,6 +7,7 @@ dependencies:
   - coverage
   - flake8
   - flake8-docstrings
+  - requests
   - interrogate
   - isort
   - mypy
@@ -19,3 +20,4 @@ dependencies:
   - python=3.13
   - textual
   - textual-dev
+  - types-requests
