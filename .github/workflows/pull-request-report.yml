@@ -30,46 +30,67 @@ jobs:
       - name: Run Black Formatter
         run: |
           echo "## BLACK" >> analysis.log
+          echo "~~~" >> analysis.log
           black --check src/ >> analysis.log 2>&1
+          black --check tests/ >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Run isort Formatter
         run: |
           echo "## ISORT" >> analysis.log
-          isort src/ --check-only --verbose >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
+          isort src/ --check-only >> analysis.log 2>&1
+          isort tests/ --check-only >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Run flake8 for Style Compliance
         run: |
           echo "## FLAKE8" >> analysis.log
-          flake8 --verbose --docstring-convention=numpy src/ >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
+          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 src/ >> analysis.log 2>&1
+          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 tests/ >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Run mypy for Type Checking
         run: |
           echo "## MYPY" >> analysis.log
+          echo "~~~" >> analysis.log
           mypy src/ >> analysis.log 2>&1
           mypy tests/ >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
+        continue-on-error: true
+
+      - name: Run pylint for for Code Smell Checks
+        run: |
+          echo "## PYLINT " >> analysis.log
+          echo "~~~" >> analysis.log
+          pylint --max-line-length=88 --max-args=6 --max-positional-arguments=6 src/ >> analysis.log 2>&1
+          pylint --max-line-length=88 --max-args=6 --max-positional-arguments=6 tests/ >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Run Pytest via Coverage.py
         run: |
           echo "## PYTEST & COVERAGE" >> analysis.log
-          echo "```" >> analysis.log
+          echo "~~~" >> analysis.log
           coverage run --source=src/ -m pytest >> analysis.log 2>&1
           coverage report >> analysis.log 2>&1
-          echo "```" >> analysis.log
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Run interrogate
         run: |
           echo "## INTERROGATE" >> analysis.log
+          echo "~~~" >> analysis.log
           interrogate --verbose >> analysis.log 2>&1
+          echo "~~~" >> analysis.log
         continue-on-error: true
 
       - name: Output Log to Terminal
         run: |
-          echo "=========================================[END ANALYSIS]============================================" >> analysis.log
           cat analysis.log
 
       - name: Upload Analysis Report
