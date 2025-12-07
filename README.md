@@ -36,20 +36,20 @@ erDiagram
     ALBUM {
         string ID PK
         string Name
-        string CoverImageLink
+        string Cover_Image_Link
     }
     FILE {
         string Hash PK
-        string TrackID FK
-        string SourceLink
+        string Track_ID FK
+        string Source_Link
     }
     RECORDS {
-        string ArtistID FK
-        string TrackID FK
+        string Artist_ID FK
+        string Track_ID FK
     }
     ON {
-        string TrackID FK
-        string AlbumID FK
+        string Track_ID FK
+        string Album_ID FK
         int TrackNumber
     }
     ARTIST ||--o{ RECORDS : ""
