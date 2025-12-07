@@ -13,4 +13,4 @@ As a [*specific user type*], I want [*specific capability*], so that [*specific 
 - [ ] Given [*context*], when [*action*], then [*outcome*]
 
 **Additional Notes**
-- For further relevant information.
+- For further relevant information (delete if irrelevant.)

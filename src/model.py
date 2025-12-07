@@ -1,0 +1,60 @@
+"""T.E.A. model and the corresponding update logic for `waft` application.
+
+Notes
+-----
+All state transitions must be pure and must return a new model instance
+rather than mutating an existing one.
+"""
+
+from dataclasses import dataclass, replace
+
+from textual.message import Message
+
+from messages import Authenticating, UpdateStatus
+
+
+@dataclass(frozen=True)
+class ApplicationModel:
+    """An immutable struct-like representation of the state of the application.
+
+    Attributes
+    ----------
+    authenticating : bool
+        Whether the application is currently performing an authentication
+        workflow. Used to disable inputs, show spinners, and block
+        additional submissions.
+    status_message : str
+        Text to display in the global status bar.
+    """
+
+    authenticating: bool
+    status_message: str
+
+
+def update(model: ApplicationModel, message: Message) -> ApplicationModel:
+    """Apply a TEA state transition to the application model.
+
+    This pure function receives the current model and a Textual message,
+    and returns a new model reflecting the appropriate state changes.
+
+    Parameters
+    ----------
+    model : ApplicationModel
+        The current immutable state of the application.
+    message : Message
+        A Textual message indicating the type of state transition to
+        perform.
+
+    Returns
+    -------
+    ApplicationModel
+        A new model instance with the applied state modifications.
+    """
+
+    match message:
+        case UpdateStatus(text=text):
+            return replace(model, status_message=text)
+        case Authenticating(state=state):
+            return replace(model, authenticating=state)
+        case _:
+            return model
