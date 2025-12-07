@@ -31,6 +31,8 @@ Download to a custom directory:
 ... )
 """
 
+from typing import Any, Dict
+
 import yt_dlp
 
 
@@ -86,7 +88,7 @@ def download_youtube_mp3(
     ...     download_path="music/%(title)s.%(ext)s"
     ... )
     """
-    ydl_opts = {
+    ydl_opts: Dict[str, Any] = {
         # Download the best quality *audio* only
         "format": "bestaudio/best",
         # Ensure there is just one song, no playlist
@@ -103,5 +105,5 @@ def download_youtube_mp3(
         "outtmpl": download_path,
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
         ydl.download([yt_link])

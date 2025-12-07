@@ -1,6 +1,5 @@
 """
-credential_request_and_auth — A small module for obtaining and validating
-Spotify API tokens.
+A small module for obtaining and validating Spotify API tokens.
 
 This module provides functions to: (1) retrieve an access token for the
 Spotify Web API using the Client Credentials flow, and (2) verify whether
@@ -25,8 +24,9 @@ Notes
 
 import base64
 from typing import Any, Dict
-from requests.models import Response
+
 import requests
+from requests.models import Response
 
 
 def get_spotify_access_token(client_id: str, client_secret: str) -> str:
@@ -79,8 +79,7 @@ def get_spotify_access_token(client_id: str, client_secret: str) -> str:
     data: Dict[str, str] = {"grant_type": "client_credentials"}
 
     # Post HTTP request
-    resp: Response = requests.post(token_url, headers=headers, data=data,
-                                   timeout=20)
+    resp: Response = requests.post(token_url, headers=headers, data=data, timeout=20)
     resp.raise_for_status()  # Caller is responsible for error handling
 
     # Parse HTTP response
@@ -123,10 +122,8 @@ def authenticate_spotify_access_token(access_token: str) -> bool:
     True
     """
     search_url: str = "https://api.spotify.com/v1/search"
-    search_headers: Dict[str, str] = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    search_params: Dict[str, str] = {
+    search_headers: Dict[str, str] = {"Authorization": f"Bearer {access_token}"}
+    search_params: Dict[str, Any] = {
         "q": "Beatles",  # search query
         "type": "track",  # search for tracks
         "limit": 5,  # number of results
