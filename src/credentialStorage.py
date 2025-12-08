@@ -8,7 +8,7 @@ import keyring
 ######################################################
 class KeyStorage:
     def __init__(self):
-        self.services = []  # List of services -> for use in the cleanTokens function
+        self.services: list[str] = []  # List of services -> for use in the cleanTokens function
 
     ######################################################
     # Name: setToken
@@ -49,7 +49,7 @@ class KeyStorage:
     # Notes: To use when closing the application to avoid a
     #       cluttered keyring
     ######################################################
-    def cleanTokens(self):
+    '''def cleanTokens(self):
         for service in self.services:
             cred = keyring.get_credentials(service, "")
-            keyring.delete_password(service, cred.username)
+            keyring.delete_password(service, cred.username)'''

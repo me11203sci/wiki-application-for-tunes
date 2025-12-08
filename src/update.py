@@ -15,7 +15,7 @@ from events import Event
 #       object, along with a events to process
 ######################################################
 def update(msg: Message, model: Model):
-    events: List[Event] = []
+    events: list[Event] = []
 
     if model.state == AppState.UNAUTHENTICATED:
         if msg == Message.START_AUTHENTICATION:
