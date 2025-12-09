@@ -5,8 +5,13 @@ The Elm Architecture model and coordinates user interface updates in
 response to Textual events.
 """
 
+from dataclasses import replace
+from typing import Optional, Tuple
+
 from textual.app import App
 
+from authentication import get_spotify_access_token
+from keyring import retrieve_credentials
 from messages import Authenticating, UpdateStatus
 from model import ApplicationModel, update
 from screens import IntitialAuthenticationScreen, SpotifySearchScreen
@@ -24,21 +29,46 @@ class Application(App):
     CSS_PATH = "../styles/main.tcss"
 
     def __init__(self) -> None:
-        """TODO."""
+        """Initialize the model state with default values on startup."""
         super().__init__()
+
         self.model: ApplicationModel = ApplicationModel(
+            active_token="",
             authenticating=False,
-            status_message="Welcome!",
+            status_message="Welcome.",
+            valid_credentials=False,
         )
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         """Initialize application state and load the initial screen.
 
         This method is called once when the Textual application finishes
         mounting. It initializes the T.E.A. model.
         """
 
-        self.push_screen(IntitialAuthenticationScreen())
+        credential_result: Optional[Tuple[str, str, str]] = retrieve_credentials()
+
+        authentication_result: Optional[str] = None
+        token: str = ""
+
+        if credential_result is not None:
+            authentication_result = self.run_worker(
+                get_spotify_access_token(credential_result[0], credential_result[1]),
+                exclusive=True,
+            ).result
+
+            token = authentication_result if authentication_result else token
+
+        self.model = replace(
+            self.model,
+            active_token=token,
+            valid_credentials=(authentication_result is not None),
+        )
+
+        if self.model.valid_credentials:
+            self.push_screen(SpotifySearchScreen())
+        else:
+            self.push_screen(IntitialAuthenticationScreen())
 
         status_widget = self.screen.query_one(StatusBar)
         status_widget.render_from_model(self.model)
@@ -61,7 +91,7 @@ class Application(App):
     async def on_authenticating(self, message: Authenticating) -> None:
         """Handle authentication-state updates.
 
-        Upates state model to reflect whether a authentication request
+        Updates state model to reflect whether a authentication request
         has been submitted, disabling parts of the user interface and
         rebuffing duplicate requests if so.
         """
@@ -72,7 +102,9 @@ class Application(App):
             self.screen.render_from_model(self.model)
 
     async def on_valid_credentials(self) -> None:
-        """TODO."""
+        """Transition to Spotify A.P.I. search screen after successful validation."""
+
+        self.pop_screen()
         self.push_screen(SpotifySearchScreen())
 
     async def action_submit_authentication(self) -> None:

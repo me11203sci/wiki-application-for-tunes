@@ -7,9 +7,8 @@ the application.
 """
 
 from asyncio import gather
-from typing import Tuple
+from typing import Optional, Tuple
 
-from requests.models import HTTPError
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
@@ -17,6 +16,7 @@ from textual.screen import Screen
 from textual.widgets import Footer, Input, Static
 
 from authentication import get_spotify_access_token
+from keyring import store_credentials
 from messages import Authenticating, UpdateStatus, ValidCredentials
 from model import ApplicationModel
 from widgets import Logo, StatusBar
@@ -84,16 +84,18 @@ class IntitialAuthenticationScreen(Screen):
         self.app.post_message(UpdateStatus("Submitting authentication requests..."))
 
         # Authentication logic (do so asynchronously).
-        try:
-            result: Tuple[str] = await gather(
-                get_spotify_access_token(client_id, client_secret)
-            )
-            print(result)
-        except HTTPError as exception:
-            print(exception)
-            self.app.post_message(UpdateStatus("Invalid credentials."))
+        # NOTE: TODO add youtube api key authentication.
+        result: Tuple[Optional[str]] = await gather(
+            get_spotify_access_token(client_id, client_secret)
+        )
 
         self.app.post_message(Authenticating(False))
+
+        if result[0] is None:
+            self.app.post_message(UpdateStatus("Invalid credentials."))
+            return
+
+        store_credentials(client_id, client_secret, api_key)
         self.app.post_message(ValidCredentials())
         self.app.post_message(UpdateStatus("Success."))
 
@@ -135,6 +137,9 @@ class SpotifySearchScreen(Screen):
     """
 
     BINDING_GROUP_TITLE: str | None = "Spotify A.P.I. Search Screen"
+    BINDINGS = [
+        Binding(key="<c-q>", action="app.quit", description="Quit the application"),
+    ]
 
     def compose(self) -> ComposeResult:
         """Construct and yield the widgets that make up the screen layout.

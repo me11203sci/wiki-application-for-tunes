@@ -19,16 +19,25 @@ class ApplicationModel:
 
     Attributes
     ----------
+    active_token: str
+        The currently active Spotify access token obtained during
+        authentication. An empty string indicates that no token has been
+        acquired or verified yet.
     authenticating : bool
         Whether the application is currently performing an authentication
         workflow. Used to disable inputs, show spinners, and block
         additional submissions.
     status_message : str
         Text to display in the global status bar.
+    valid_credentials: bool
+        Whether the application has confirmed that stored or newly provided
+        credentials are valid for making Spotify API requests.
     """
 
+    active_token: str
     authenticating: bool
     status_message: str
+    valid_credentials: bool
 
 
 def update(model: ApplicationModel, message: Message) -> ApplicationModel:
