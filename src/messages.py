@@ -70,5 +70,6 @@ class ValidCredentials(Message):
         Notes
         -----
         Calling ``super().__init__()`` is required so that Textual correctly
+        handles this as a message.
         """
         super().__init__()

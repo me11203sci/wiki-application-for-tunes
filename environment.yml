@@ -7,17 +7,19 @@ dependencies:
   - coverage
   - flake8
   - flake8-docstrings
-  - requests
   - interrogate
   - isort
   - mypy
   - pip
+  - pip:
+    - securecredentials
   - pudb
   - pycodestyle
   - pydocstyle
   - pylint
   - pytest
   - python=3.13
+  - requests
   - textual
   - textual-dev
   - types-requests

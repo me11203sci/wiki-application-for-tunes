@@ -2,7 +2,7 @@
 
 This module provides functions to: (1) retrieve an access token for the
 Spotify Web A.P.I. using the Client Credentials flow, and (2) verify whether
-a given access token is valid by making a test API call. It is designed
+a given access token is valid by making a test A.P.I. call. It is designed
 for backend or utility scripts where you need to programmatically interact
 with Spotify's A.P.I.
 
@@ -22,13 +22,13 @@ Notes
 """
 
 import base64
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import requests
 from requests.models import Response
 
 
-async def get_spotify_access_token(client_id: str, client_secret: str) -> str:
+async def get_spotify_access_token(client_id: str, client_secret: str) -> Optional[str]:
     """Obtain an access token for the Spotify Web API using client credentials.
 
     This function sends a request to Spotify's token endpoint with the provided
@@ -45,16 +45,12 @@ async def get_spotify_access_token(client_id: str, client_secret: str) -> str:
 
     Returns
     -------
-    access_token : str
-        A Spotify access token (Bearer token) valid for API authentication.
-
-    Raises
-    ------
-    requests.HTTPError
-        If the HTTP request to retrieve the token fails (non-2xx status code).
+    str | None
+        A valid Spotify access token if retrieval succeeds, otherwise
+        ``None`` when the token request fails or returns a non-success status.
     """
     # Spotify token URL
-    token_url = "https://accounts.spotify.com/api/token"
+    token_url: str = "https://accounts.spotify.com/api/token"
 
     # Encode client ID and secret
     auth_str: str = f"{client_id}:{client_secret}"
@@ -72,7 +68,10 @@ async def get_spotify_access_token(client_id: str, client_secret: str) -> str:
 
     # Post HTTP request
     resp: Response = requests.post(token_url, headers=headers, data=data, timeout=20)
-    resp.raise_for_status()  # Caller is responsible for error handling
+    try:
+        resp.raise_for_status()  # Caller is responsible for error handling
+    except requests.HTTPError:  # There are other potential unhandled errors.
+        return None
 
     # Parse HTTP response
     token_response: Dict[str, Any] = resp.json()

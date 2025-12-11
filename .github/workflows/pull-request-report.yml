@@ -32,6 +32,7 @@ jobs:
           echo "## BLACK" >> analysis.log
           echo "~~~" >> analysis.log
           black --check src/ >> analysis.log 2>&1
+          black --check tests/ >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true
 
@@ -39,7 +40,8 @@ jobs:
         run: |
           echo "## ISORT" >> analysis.log
           echo "~~~" >> analysis.log
-          isort src/ --check-only --verbose >> analysis.log 2>&1
+          isort src/ --check-only >> analysis.log 2>&1
+          isort tests/ --check-only >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true
 
@@ -48,6 +50,7 @@ jobs:
           echo "## FLAKE8" >> analysis.log
           echo "~~~" >> analysis.log
           flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 src/ >> analysis.log 2>&1
+          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 tests/ >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true
 
