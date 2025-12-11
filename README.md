@@ -29,27 +29,27 @@ erDiagram
     TRACK {
         string ID PK
         string Name
-        date Release_Date
+        date ReleaseDate
         int Duration
         boolean explicit
     }
     ALBUM {
         string ID PK
         string Name
-        string Cover_Image_Link
+        string CoverImageLink
     }
     FILE {
         string Hash PK
-        string Track_ID FK
-        string Source_Link
+        string TrackID FK
+        string SourceLink
     }
     RECORDS {
-        string Artist_ID FK
-        string Track_ID FK
+        string ArtistID FK
+        string TrackID FK
     }
     ON {
-        string Track_ID FK
-        string Album_ID FK
+        string TrackID FK
+        string AlbumID FK
         int TrackNumber
     }
     ARTIST ||--o{ RECORDS : ""
