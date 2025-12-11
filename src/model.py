@@ -2,8 +2,8 @@
 
 Notes
 -----
-All state transitions must be pure and must return a new model instance
-rather than mutating an existing one.
+- All state transitions must be pure and must return a new model instance
+  rather than mutating an existing one.
 """
 
 from dataclasses import dataclass, replace

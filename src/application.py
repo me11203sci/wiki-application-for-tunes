@@ -9,6 +9,7 @@ from dataclasses import replace
 from typing import Optional, Tuple
 
 from textual.app import App
+from textual.css.query import NoMatches
 
 from authentication import get_spotify_access_token
 from keyring import retrieve_credentials
@@ -35,7 +36,7 @@ class Application(App):
         self.model: ApplicationModel = ApplicationModel(
             active_token="",
             authenticating=False,
-            status_message="Welcome.",
+            status_message="...",
             valid_credentials=False,
         )
 
@@ -70,8 +71,7 @@ class Application(App):
         else:
             self.push_screen(IntitialAuthenticationScreen())
 
-        status_widget = self.screen.query_one(StatusBar)
-        status_widget.render_from_model(self.model)
+        self.app.post_message(UpdateStatus("Welcome."))
 
     async def on_update_status(self, message: UpdateStatus) -> None:
         """Handle a status-message update event.
@@ -82,11 +82,20 @@ class Application(App):
         ----------
         message : UpdateStatus
             The TEA message containing the new status text.
+
+        Notes
+        -----
+        - Make sure that screen contains ``StatusBar``, otherwise this function will
+          do nothing
         """
 
         self.model = update(self.model, message)
-        status_widget: StatusBar = self.screen.query_one(StatusBar)
-        status_widget.render_from_model(self.model)
+
+        try:
+            status_widget: StatusBar = self.screen.query_one(StatusBar)
+            status_widget.render_from_model(self.model)
+        except NoMatches:
+            pass
 
     async def on_authenticating(self, message: Authenticating) -> None:
         """Handle authentication-state updates.
