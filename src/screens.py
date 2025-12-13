@@ -7,26 +7,25 @@ the application.
 """
 
 from asyncio import gather
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
-# from textual.widgets.option_list import Option
 from rich.columns import Columns
 from rich.text import Text
+from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Button, Footer, Input, OptionList, Select, Static
+from textual.widgets.option_list import Option
 
 from authentication import get_spotify_access_token
 from keyring import store_credentials
-from messages import Authenticating, UpdateStatus, ValidCredentials
+from messages import (Authenticating, SearchRequest, StartDownload,
+                      TrackSelected, UpdateStatus, UrlSelected,
+                      ValidCredentials)
 from model import ApplicationModel
 from widgets import Logo, StatusBar
-
-# from rich.table import Table
-# from rich.progress_bar import ProgressBar
-# from rich.padding import Padding
 
 
 class IntitialAuthenticationScreen(Screen):
@@ -161,7 +160,7 @@ class SpotifySearchScreen(Screen):
 
     BINDING_GROUP_TITLE: str | None = "Spotify A.P.I. Search Screen"
     BINDINGS = [
-        Binding(key="<c-q>", action="app.quit", description="Quit the application"),
+        Binding(key="<c-q>", action="app.quit", description="Quit the application")
     ]
 
     def compose(self) -> ComposeResult:
@@ -170,15 +169,21 @@ class SpotifySearchScreen(Screen):
         Yields
         ------
         ComposeResult
-            An iterable container of Textual widgets, including the
-            credential input fields, the application logo, the status
-            bar, and the footer.
+            An iterable container of Textual widgets, including the search input bar,
+            mode selector, results list, download progress list, status bar, and
+            footer.
         """
 
         search_bar: Horizontal = Horizontal(
             Input(placeholder="Search", id="search_input"),
             Button("", id="search_button"),
             id="search_bar",
+        )
+        search_mode: Select = Select(
+            [("Track", "track")],  # NOTE: Add Album search in future.
+            allow_blank=False,
+            compact=True,
+            id="search_mode",
         )
         header_text: Columns = Columns(
             [
@@ -195,12 +200,6 @@ class SpotifySearchScreen(Screen):
             id="search_results_view",
         )
         downloads: OptionList = OptionList(id="downloads_view")
-        search_mode: Select = Select(
-            ((mode, mode) for mode in ["Track"]),  # NOTE: Add Album search in future.
-            allow_blank=False,
-            compact=True,
-            id="search_mode",
-        )
 
         search_bar.border_title = "[1] ─ Search"
         search_results.border_title = "[2] ─ Search Results"
@@ -220,38 +219,119 @@ class SpotifySearchScreen(Screen):
         yield status_bar
         yield Footer(show_command_palette=False)
 
-    # def on_mount(self):
-    #     b = Table.grid(
-    #         expand=True,
-    #     )
-    #     # NOTE: Changing the ratios is a guess and check, so have fun changing it...
-    # b.add_column(
-    #     "Title", justify="left", ratio=90, no_wrap=True, overflow="ellipsis"
-    # )
-    # b.add_column(
-    #     "Album", justify="left", ratio=160, no_wrap=True, overflow="ellipsis"
-    # )
-    # b.add_column(
-    #     "Duration", justify="right", ratio=50, no_wrap=True, overflow="ellipsis"
-    # )
-    # b.add_row(
-    #     "[b]505[/b]", "Favourite Worst Nightmare (Standard Version)", "4:13"
-    # )
-    # b.add_row("Arctic Monkeys")
-    # a: OptionList = self.query_one("#search_results", OptionList)
-    # a.add_option(b)
-    #
-    # d = Table.grid(expand=True)
-    # e: ProgressBar = ProgressBar(total=one,)
-    # d.add_column(
-    #     "Metadata", justify="left", ratio=50, no_wrap=True, overflow="ellipsis"
-    # )
-    # d.add_column("Progress", justify="center", ratio=50, no_wrap=True)
-    # d.add_row("[b]505[/b]")
-    # d.add_row("Arctic Monkeys", Padding(e, (0, 2)))
-    # d.add_row("Favourite Worst Nightmare (Standard Version)")
-    # c: OptionList = self.query_one("#downloads_view", OptionList)
-    # c.add_option(d)
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Handle input submission events in the search bar.
+
+        Triggers a Spotify search when the user presses Enter in the search input field,
+        then moves focus to the results list for keyboard navigation.
+
+        Parameters
+        ----------
+        event : Input.Submitted
+            The input submission event containing the search query value.
+        """
+
+        if event.input.id == "search_input":
+            mode: str = str(self.query_one("#search_mode", Select).value)
+            self.app.post_message(SearchRequest(event.value, mode))
+            self.query_one("#search_results", OptionList).focus()
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle search button click events.
+
+        Triggers a Spotify search when the user clicks the search button,
+        using the current value in the search input field.
+
+        Parameters
+        ----------
+        event : Button.Pressed
+            The button press event.
+
+        Notes
+        -----
+        - Only processes events from the search_button widget.
+        """
+
+        if event.button.id == "search_button":
+            query: str = self.query_one("#search_input", Input).value.strip()
+            mode: str = str(self.query_one("#search_mode", Select).value)
+            self.app.post_message(SearchRequest(query, mode))
+
+    async def on_select_changed(self, event: Select.Changed) -> None:
+        """Handle search mode selection changes.
+
+        Automatically re-runs the current search query when the user changes
+        the search mode (e.g., from track to album search).
+
+        Parameters
+        ----------
+        event : Select.Changed
+            The select widget change event containing the new mode value.
+
+        Notes
+        -----
+        - Only processes events from the search_mode widget.
+        - Only triggers a new search if a query is already present.
+
+        """
+
+        if event.select.id == "search_mode":
+            query: str = self.query_one("#search_input", Input).value.strip()
+            mode: str = str(event.value)
+            if query:
+                self.app.post_message(SearchRequest(query, mode))
+
+    def display_results(self, results: List[Option]) -> None:
+        """Update the search results list with new options.
+
+        Clears the current search results and populates the list with new
+        track options returned from a Spotify search.
+
+        Parameters
+        ----------
+        results : List[Option]
+            List of Textual Option objects representing search results to display.
+        """
+
+        search_results_view: OptionList = self.query_one("#search_results", OptionList)
+        search_results_view.clear_options()
+        search_results_view.add_options(results)
+
+    def display_download(self, download: Option) -> None:
+        """Add a new download to the progress view.
+
+        Appends a download progress option to the downloads list, allowing
+        users to monitor active downloads.
+
+        Parameters
+        ----------
+        download : Option
+            A Textual Option object representing the download to display.
+        """
+
+        search_results_view: OptionList = self.query_one("#downloads_view", OptionList)
+        search_results_view.add_option(download)
+
+    async def on_option_list_option_selected(
+        self, event: OptionList.OptionMessage
+    ) -> None:
+        """Handle track selection from the search results list.
+
+        Dispatches a TrackSelected message when the user selects a track,
+        triggering the audio source selection workflow.
+
+        Parameters
+        ----------
+        event : OptionList.OptionMessage
+            The option selection event containing the selected index.
+
+        Notes
+        -----
+        - Only processes events from the search_results widget.
+        """
+
+        if event.option_list.id == "search_results":
+            self.app.post_message(TrackSelected(event.option_index))
 
 
 class AudioSource(ModalScreen):
@@ -281,8 +361,66 @@ class AudioSource(ModalScreen):
             and a list of suggestion options.
         """
         url_field: Input = Input(id="url_field")
-        source_suggestions: OptionList = OptionList()
+        source_suggestions: OptionList = OptionList(id="suggestions_view")
         url_field.border_title = "Provide YouTube URL:"
         source_suggestions.border_title = "Suggestions (press <tab> to focus)"
 
         yield Horizontal(Vertical(url_field, source_suggestions))
+
+    def populate_suggestions(self, suggestions: List[Option]) -> None:
+        """Populate the suggestions list with YouTube search results.
+
+        Clears existing suggestions and adds new YouTube video options
+        for the user to choose from as audio sources.
+
+        Parameters
+        ----------
+        suggestions : List[Option]
+            List of Textual Option objects representing YouTube search results.
+        """
+
+        suggestions_view: OptionList = self.query_one("#suggestions_view", OptionList)
+        suggestions_view.clear_options()
+        suggestions_view.add_options(suggestions)
+
+    def on_key(self, event: events.Key) -> None:
+        """Handle keyboard events for modal navigation and URL submission.
+
+        Processes Escape to close the modal and Enter to submit a manually
+        entered YouTube URL for download.
+
+        Parameters
+        ----------
+        event : events.Key
+            The keyboard event containing the pressed key.
+        """
+
+        if event.key == "escape":
+            # Prevent Input from processing it.
+            event.stop()
+            self.app.pop_screen()
+        elif event.key == "enter":
+            url = self.query_one("#url_field", Input).value.strip()
+            if not url:  # add validation
+                return
+            event.stop()
+            self.app.pop_screen()
+            self.app.post_message(StartDownload(url))
+
+    async def on_option_list_option_selected(
+        self, event: OptionList.OptionMessage
+    ) -> None:
+        """Handle selection of a YouTube suggestion from the list.
+
+        Dispatches a UrlSelected message when the user chooses a suggested
+        video, then closes the modal to begin the download.
+
+        Parameters
+        ----------
+        event : OptionList.OptionMessage
+            The option selection event containing the selected suggestion index.
+        """
+
+        if event.option_list.id == "suggestions_view":
+            self.app.post_message(UrlSelected(event.option_index))
+            self.app.pop_screen()

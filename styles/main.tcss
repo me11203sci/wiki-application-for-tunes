@@ -113,6 +113,7 @@ Footer
 }
 #downloads_view
 {
+  color: $theme_color;
   border: round $theme_color;
   background: 0%;
   height: 1fr;
@@ -122,6 +123,10 @@ Footer
   &:focus
   {
     border: round $highlight_color;
+    color: $highlight_color;
+  }
+  &:focus-within
+  {
     color: $highlight_color;
   }
 }
@@ -166,7 +171,8 @@ AudioSource
   Horizontal
   {
     height: auto;
-    width: 0.9fr;
+    max-width: 128;
+    min-width: 0.75fr;
     background: red;
   }
   Vertical
@@ -188,6 +194,7 @@ AudioSource
   }
   OptionList
   {
+    scrollbar-size: 0 0;
     color: $theme_color;
     background: $background;
     border: none;

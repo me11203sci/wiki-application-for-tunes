@@ -3,9 +3,15 @@
 This module defines user interface components.
 """
 
+# from rich.progress_bar import ProgressBar
+from rich.table import Table
 from textual.widgets import Static
+from textual.widgets.option_list import Option
 
+from datatypes import DisplayedTrack
 from model import ApplicationModel
+
+# from rich.padding import Padding
 
 
 class Logo(Static):
@@ -52,3 +58,72 @@ class StatusBar(Static):
         """
 
         self.update(model.status_message)
+
+
+class DownloadOption(Option):
+    """Custom Option widget for displaying download progress.
+
+    Extends the base Textual Option to show track metadata along with
+    a progress bar indicating download completion status.
+
+    Parameters
+    ----------
+    track : DisplayedTrack
+        The track metadata to display in the download option.
+
+    Attributes
+    ----------
+    title : str
+        The track title.
+    artist : str
+        The track artist.
+    album : str
+        The album name.
+    progress : float
+        Current download progress as a percentage (0-100).
+    """
+
+    def __init__(self, track: DisplayedTrack) -> None:
+        self.title = track.title
+        self.artist = track.artist
+        self.album = track.album
+        self.progress = 0
+        self.label = self.render_option()
+        super().__init__(self.render_option())
+
+    def update(self, progress: float):
+        """Update the download progress and refresh the display.
+
+        Parameters
+        ----------
+        progress : float
+            New progress value as a percentage (0-100).
+        """
+
+        self.progress = int(progress)
+        self.label = self.render_option()
+
+    def render_option(self):
+        """Render the option layout with track info and progress bar.
+
+        Returns
+        -------
+        Table
+            A Rich Table containing the formatted track information and
+            progress bar for display in the OptionList.
+        """
+
+        table: Table = Table.grid(expand=True)
+
+        # table.
+        table.add_row(f"[b]{self.title}[/b]")
+        table.add_row(f"{self.artist}")
+        table.add_row(f"{self.album}")
+
+        # progress = ProgressBar(
+        #     total=100, completed=self.progress, complete_style="orchid"
+        # )
+
+        # table.add_row(Padding(progress, (1, 4)))
+
+        return table
