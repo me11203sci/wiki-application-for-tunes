@@ -6,16 +6,25 @@ response to Textual events.
 """
 
 from dataclasses import replace
-from typing import Optional, Tuple
+from pathlib import Path
+from typing import List, Optional, Tuple
 
 from textual.app import App
+from textual.css.query import NoMatches
 
 from authentication import get_spotify_access_token
+from datatypes import DisplayedTrack
 from keyring import retrieve_credentials
-from messages import Authenticating, UpdateStatus
+from messages import (Authenticating, SearchRequest, StartDownload,
+                      TrackSelected, UpdateStatus, UrlSelected)
 from model import ApplicationModel, update
-from screens import IntitialAuthenticationScreen, SpotifySearchScreen
-from widgets import StatusBar
+from screens import (AudioSource, IntitialAuthenticationScreen,
+                     SpotifySearchScreen)
+from spotify import get_metadata, spotify_search
+from utils import create_options_from_results, create_options_from_suggestions
+from widgets import DownloadOption, StatusBar
+from youtube import search_youtube
+from ytdlp import download_track
 
 
 class Application(App):
@@ -30,12 +39,20 @@ class Application(App):
 
     def __init__(self) -> None:
         """Initialize the model state with default values on startup."""
+
         super().__init__()
 
         self.model: ApplicationModel = ApplicationModel(
             active_token="",
+            api_key="",
             authenticating=False,
-            status_message="Welcome.",
+            downloads_folder=Path.home() / "Music/waft/",
+            developer_key="",
+            search_query=("", ""),
+            search_results=[],
+            selection=DisplayedTrack("", "", "", "", ""),
+            suggestion_results=[],
+            status_message="...",
             valid_credentials=False,
         )
 
@@ -59,6 +76,11 @@ class Application(App):
 
             token = authentication_result if authentication_result else token
 
+            self.model = replace(
+                self.model,
+                api_key=credential_result[2],
+            )
+
         self.model = replace(
             self.model,
             active_token=token,
@@ -70,8 +92,7 @@ class Application(App):
         else:
             self.push_screen(IntitialAuthenticationScreen())
 
-        status_widget = self.screen.query_one(StatusBar)
-        status_widget.render_from_model(self.model)
+        self.app.post_message(UpdateStatus("Welcome."))
 
     async def on_update_status(self, message: UpdateStatus) -> None:
         """Handle a status-message update event.
@@ -82,11 +103,20 @@ class Application(App):
         ----------
         message : UpdateStatus
             The TEA message containing the new status text.
+
+        Notes
+        -----
+        - Make sure that screen contains ``StatusBar``, otherwise this function will
+          do nothing.
         """
 
         self.model = update(self.model, message)
-        status_widget: StatusBar = self.screen.query_one(StatusBar)
-        status_widget.render_from_model(self.model)
+
+        try:
+            status_widget: StatusBar = self.screen.query_one(StatusBar)
+            status_widget.render_from_model(self.model)
+        except NoMatches:
+            pass
 
     async def on_authenticating(self, message: Authenticating) -> None:
         """Handle authentication-state updates.
@@ -106,6 +136,126 @@ class Application(App):
 
         self.pop_screen()
         self.push_screen(SpotifySearchScreen())
+
+    async def on_search_request(self, message: SearchRequest) -> None:
+        """Handle a request to perform a Spotify search.
+
+        Parameters
+        ----------
+        message : SearchRequest
+            Contains the user query string and search mode (search by track, album,
+            etc.)
+
+        Notes
+        -----
+        - If the new query is identical to the one cached in
+          ``self.model.search_query``, no search is issued.
+        """
+
+        if self.model.search_query == (message.query, message.mode):
+            return
+
+        self.model = update(self.model, message)
+
+        self.app.post_message(UpdateStatus("Searching..."))
+        search_results: List[DisplayedTrack] = spotify_search(
+            message.query, self.model.active_token, 50
+        )
+        self.app.post_message(UpdateStatus("Done."))
+
+        if isinstance(self.screen, SpotifySearchScreen):
+            self.screen.display_results(create_options_from_results(search_results))
+
+        self.model = replace(self.model, search_results=search_results)
+
+    async def on_track_selected(self, message: TrackSelected) -> None:
+        """Handle track selection and fetch YouTube audio source suggestions.
+
+        Parameters
+        ----------
+        message : TrackSelected
+            Contains the index of the selected track from search results.
+
+        Notes
+        -----
+        - Updates the model with the selected track.
+        - Pushes the AudioSource screen onto the stack.
+        - Fetches YouTube suggestions for the selected track and populates the screen.
+        """
+
+        self.model = replace(
+            self.model, selection=self.model.search_results[message.index]
+        )
+        self.push_screen(AudioSource())
+
+        if isinstance(self.screen, AudioSource):
+
+            suggestion_results = search_youtube(
+                self.model.selection, self.model.api_key
+            )
+            self.model = replace(self.model, suggestion_results=suggestion_results)
+            self.screen.populate_suggestions(
+                create_options_from_suggestions(suggestion_results)
+            )
+
+    async def on_url_selected(self, message: UrlSelected) -> None:
+        """Handle YouTube U.R.L. selection and initiate download.
+
+        Parameters
+        ----------
+        message : UrlSelected
+            Contains the index of the selected YouTube URL from suggestions.
+
+        Notes
+        -----
+        - Posts a StartDownload message with the selected URL.
+        """
+
+        self.app.post_message(
+            StartDownload(self.model.suggestion_results[message.index].url)
+        )
+
+    async def on_start_download(self, message: StartDownload) -> None:
+        """Begin downloading the selected track with metadata and album art.
+
+        Parameters
+        ----------
+        message : StartDownload
+            Contains the YouTube U.R.L. to download from.
+
+        Notes
+        -----
+        - Fetches album artwork from Spotify metadata.
+        - Displays download progress in the U.I. via DownloadOption widget.
+        - Runs the download in a worker thread to avoid blocking the U.I.
+        """
+
+        # Get image.
+        image_url = get_metadata(
+            self.model.selection.track_id, self.model.active_token
+        ).album.image_url
+
+        # Add option to view.
+        title = self.model.selection.title
+        option = DownloadOption(self.model.selection)
+
+        if isinstance(self.screen, SpotifySearchScreen):
+            self.screen.display_download(
+                # create_option_from_download(self.model.selection)
+                option
+            )
+        # Download song.
+        self.run_worker(
+            download_track(
+                message.url,
+                Path(self.model.downloads_folder, f"{title}"),
+                self.model.selection,
+                image_url,
+            ),
+            thread=True,
+        )
+
+        # Call to Database
 
     async def action_submit_authentication(self) -> None:
         """Trigger authentication submission workflow.

@@ -179,3 +179,30 @@ class DisplayedTrack:
         self.album = album
         self.duration = duration
         self.track_id = track_id
+
+
+@dataclass
+class YoutubeResult:
+    """Represents a single YouTube video search result.
+
+    Stores metadata for a YouTube video that may serve as an audio
+    source for downloading.
+
+    Attributes
+    ----------
+    video_title : str
+        The title of the YouTube video.
+    channel : str
+        The name of the YouTube channel that uploaded the video.
+    url : str
+        The full URL to the YouTube video.
+    """
+
+    video_title: str
+    channel: str
+    url: str
+
+    def __init__(self, video_title: str, channel: str, url: str):
+        self.video_title = video_title
+        self.channel = channel
+        self.url = url

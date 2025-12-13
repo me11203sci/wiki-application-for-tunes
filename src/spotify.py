@@ -23,7 +23,7 @@ from typing import Any, Dict, List
 import requests
 from requests.models import Response
 
-from spotify_data_classes import Album, Artist, DisplayedTrack, FullMetadata, Track
+from datatypes import Album, Artist, DisplayedTrack, FullMetadata, Track
 
 
 def parse_tracks_from_json(json_object: Dict[str, Any]) -> List[DisplayedTrack]:
