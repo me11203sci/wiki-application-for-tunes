@@ -8,8 +8,8 @@ from rich.table import Table
 from textual.widgets import Static
 from textual.widgets.option_list import Option
 
-from datatypes import DisplayedTrack
-from model import ApplicationModel
+from waft.datatypes import DisplayedTrack
+from waft.model import ApplicationModel
 
 # from rich.padding import Padding
 
