@@ -19,13 +19,13 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import Button, Footer, Input, OptionList, Select, Static
 from textual.widgets.option_list import Option
 
-from authentication import get_spotify_access_token
-from keyring import store_credentials
-from messages import (Authenticating, SearchRequest, StartDownload,
-                      TrackSelected, UpdateStatus, UrlSelected,
-                      ValidCredentials)
-from model import ApplicationModel
-from widgets import Logo, StatusBar
+from waft.authentication import get_spotify_access_token
+from waft.keyring import store_credentials
+from waft.messages import (Authenticating, SearchRequest, StartDownload,
+                           TrackSelected, UpdateStatus, UrlSelected,
+                           ValidCredentials)
+from waft.model import ApplicationModel
+from waft.widgets import Logo, StatusBar
 
 
 class IntitialAuthenticationScreen(Screen):

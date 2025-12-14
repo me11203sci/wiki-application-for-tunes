@@ -12,19 +12,20 @@ from typing import List, Optional, Tuple
 from textual.app import App
 from textual.css.query import NoMatches
 
-from authentication import get_spotify_access_token
-from datatypes import DisplayedTrack
-from keyring import retrieve_credentials
-from messages import (Authenticating, SearchRequest, StartDownload,
-                      TrackSelected, UpdateStatus, UrlSelected)
-from model import ApplicationModel, update
-from screens import (AudioSource, IntitialAuthenticationScreen,
-                     SpotifySearchScreen)
-from spotify import get_metadata, spotify_search
-from utils import create_options_from_results, create_options_from_suggestions
-from widgets import DownloadOption, StatusBar
-from youtube import search_youtube
-from ytdlp import download_track
+from waft.authentication import get_spotify_access_token
+from waft.datatypes import DisplayedTrack
+from waft.keyring import retrieve_credentials
+from waft.messages import (Authenticating, SearchRequest, StartDownload,
+                           TrackSelected, UpdateStatus, UrlSelected)
+from waft.model import ApplicationModel, update
+from waft.screens import (AudioSource, IntitialAuthenticationScreen,
+                          SpotifySearchScreen)
+from waft.spotify import get_metadata, spotify_search
+from waft.utils import (create_options_from_results,
+                        create_options_from_suggestions)
+from waft.widgets import DownloadOption, StatusBar
+from waft.youtube import search_youtube
+from waft.ytdlp import download_track
 
 
 class Application(App):
@@ -35,7 +36,7 @@ class Application(App):
     """
 
     ALLOW_SELECT = False
-    CSS_PATH = "../styles/main.tcss"
+    CSS_PATH = Path(__file__).parent / "styles" / "main.tcss"
 
     def __init__(self) -> None:
         """Initialize the model state with default values on startup."""

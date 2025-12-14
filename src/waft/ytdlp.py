@@ -9,8 +9,8 @@ from pathlib import Path
 
 from yt_dlp import YoutubeDL
 
-from datatypes import DisplayedTrack
-from metadata import write_metadata
+from waft.datatypes import DisplayedTrack
+from waft.metadata import write_metadata
 
 
 async def download_track(

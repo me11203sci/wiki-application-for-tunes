@@ -7,6 +7,7 @@ dependencies:
   - coverage
   - flake8
   - flake8-docstrings
+  - hatch
   - interrogate
   - isort
   - mypy

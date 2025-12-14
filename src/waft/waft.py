@@ -13,8 +13,18 @@ To run the application from the command line::
 
 from textual.app import App
 
-from application import Application
+from waft.application import Application
 
-if __name__ == "__main__":
+
+def waft() -> None:
+    """TODO.
+
+    TODO.
+    """
+
     application: App = Application()
     application.run()
+
+
+if __name__ == "__main__":
+    waft()

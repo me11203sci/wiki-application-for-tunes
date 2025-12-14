@@ -10,8 +10,8 @@ from typing import List
 from rich.table import Table
 from textual.widgets.option_list import Option
 
-from datatypes import YoutubeResult
-from spotify import DisplayedTrack
+from waft.datatypes import YoutubeResult
+from waft.spotify import DisplayedTrack
 
 
 def format_milliseconds(milliseconds: int) -> str:
