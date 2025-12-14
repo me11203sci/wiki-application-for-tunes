@@ -14,7 +14,10 @@
 `waft` is a [textual user interface](https://en.wikipedia.org/wiki/Text-based_user_interface) application that facilitates the association of files in the [MP3](https://ossrs.io/lts/zh-cn/assets/files/ISO_IEC_13818-3-MP3-1997-8bbd47f7cd4e0325f23b9473f6932fa1.pdf) format with metadata according to the [ID3 standard](https://id3.org/id3v2.3.0).
 ## Installation
 [comment]: # (Todo. May look having user download repository or otherwise we may also opt to host the application as a website.)
-Installation instructions will be published once deployment infrastructure is finalized.
+Install `waft` via `pip`:
+```
+pip install waft
+```
 ## Usage
 Usage instructions will be provided once the command-line interface and core workflows are finalized.
 ## Implementation Details

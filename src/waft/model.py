@@ -12,8 +12,8 @@ from typing import List, Tuple
 
 from textual.message import Message
 
-from datatypes import DisplayedTrack, YoutubeResult
-from messages import Authenticating, SearchRequest, UpdateStatus
+from waft.datatypes import DisplayedTrack, YoutubeResult
+from waft.messages import Authenticating, SearchRequest, UpdateStatus
 
 
 @dataclass(frozen=True)

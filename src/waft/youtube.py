@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 import googleapiclient.discovery  # type: ignore
 
-from datatypes import DisplayedTrack, YoutubeResult
+from waft.datatypes import DisplayedTrack, YoutubeResult
 
 
 def parse_results_from_json(json_object: Dict[str, Any]) -> List[YoutubeResult]:

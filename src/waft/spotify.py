@@ -23,7 +23,7 @@ from typing import Any, Dict, List
 import requests
 from requests.models import Response
 
-from datatypes import Album, Artist, DisplayedTrack, FullMetadata, Track
+from waft.datatypes import Album, Artist, DisplayedTrack, FullMetadata, Track
 
 
 def parse_tracks_from_json(json_object: Dict[str, Any]) -> List[DisplayedTrack]:

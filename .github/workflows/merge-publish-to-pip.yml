@@ -1,0 +1,50 @@
+name: Publish New Version of Package to PyPI
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install hatch hatchling
+
+      - name: Get current version
+        id: version
+        run: |
+          echo "current=$(python -c 'from src.waft.__about__ import __version__; print(__version__)')" >> $GITHUB_OUTPUT
+      
+      - name: Check if version exists on PyPI
+        id: check
+        run: |
+          if pip index versions waft | grep -q "${{ steps.version.outputs.current }}"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+      
+      - name: Build package
+        if: steps.check.outputs.exists == 'false'
+        run: hatch build
+      
+      - name: Publish to PyPI
+        if: steps.check.outputs.exists == 'false'
+        env:
+          HATCH_INDEX_USER: __token__
+          HATCH_INDEX_AUTH: ${{ secrets.PYPI_API_TOKEN }}
+        run: hatch publish

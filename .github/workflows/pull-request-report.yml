@@ -4,8 +4,8 @@ permissions:
   pull-requests: write
 
 on:
-    pull_request:
-      branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   analysis:
@@ -40,8 +40,8 @@ jobs:
         run: |
           echo "## ISORT" >> analysis.log
           echo "~~~" >> analysis.log
-          isort src/ --check-only >> analysis.log 2>&1
-          isort tests/ --check-only >> analysis.log 2>&1
+          isort src/ --diff --check-only >> analysis.log 2>&1
+          isort tests/ --diff --check-only >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true
 
@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "## PYTEST & COVERAGE" >> analysis.log
           echo "~~~" >> analysis.log
-          coverage run --source=src/ -m pytest >> analysis.log 2>&1
+          coverage run --source=src/waft -m pytest >> analysis.log 2>&1
           coverage report >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true

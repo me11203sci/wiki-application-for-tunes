@@ -12,7 +12,7 @@ import eyed3  # type: ignore
 import music_tag  # type: ignore
 from eyed3.id3.frames import ImageFrame  # type: ignore
 
-from datatypes import DisplayedTrack
+from waft.datatypes import DisplayedTrack
 
 # from PIL import Image
 
