@@ -10,9 +10,15 @@ dependencies:
   - interrogate
   - isort
   - mypy
+  - pillow
   - pip
   - pip:
+    - eyed3
+    - google-api-python-client
+    - music-tag
+    - python-mpv
     - securecredentials
+    - types-yt-dlp
   - pudb
   - pycodestyle
   - pydocstyle
@@ -23,3 +29,4 @@ dependencies:
   - textual
   - textual-dev
   - types-requests
+  - yt-dlp

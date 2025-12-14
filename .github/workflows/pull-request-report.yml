@@ -67,8 +67,8 @@ jobs:
         run: |
           echo "## PYLINT " >> analysis.log
           echo "~~~" >> analysis.log
-          pylint --max-line-length=88 --max-args=6 --max-positional-arguments=6 src/ >> analysis.log 2>&1
-          pylint --max-line-length=88 --max-args=6 --max-positional-arguments=6 tests/ >> analysis.log 2>&1
+          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 src/ >> analysis.log 2>&1
+          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 tests/ >> analysis.log 2>&1
           echo "~~~" >> analysis.log
         continue-on-error: true
 
