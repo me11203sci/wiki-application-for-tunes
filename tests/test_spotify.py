@@ -1,3 +1,7 @@
+"""
+Unit tests for the functions in src/waft/spotify.py
+"""
+
 import pytest
 from unittest.mock import patch, Mock
 import requests

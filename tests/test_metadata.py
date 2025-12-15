@@ -1,3 +1,7 @@
+"""
+Unit tests for the functions in src/waft/metadata.py
+"""
+
 import pytest
 from unittest.mock import patch, Mock, MagicMock
 from pathlib import Path
@@ -7,9 +11,10 @@ from waft.metadata import *
 from waft.datatypes import DisplayedTrack
 
 
-'''
+"""
 Tests for write_metadata()
-'''
+"""
+
 
 @patch("waft.metadata.urlopen")
 @patch("waft.metadata.eyed3.load")
@@ -23,7 +28,7 @@ def test_write_metadata_Success(mock_load_file, mock_eyed3_load, mock_urlopen):
         artist="Test Artist",
         album="Test Album",
         duration=123456,
-        track_id="1234"
+        track_id="1234",
     )
 
     mock_tags = MagicMock()

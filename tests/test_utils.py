@@ -1,3 +1,7 @@
+"""
+Unit tests for the functions in src/waft/utils.py
+"""
+
 import pytest
 from rich.table import Table
 from textual.widgets.option_list import Option

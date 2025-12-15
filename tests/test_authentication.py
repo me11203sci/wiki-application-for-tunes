@@ -1,3 +1,7 @@
+"""
+Unit tests for the functions in src/waft/authentication.py
+"""
+
 import pytest
 from unittest.mock import patch, Mock
 import requests
@@ -6,9 +10,10 @@ import asyncio
 from waft.authentication import *
 
 
-'''
+"""
 Tests for get_spotify_access_token()
-'''
+"""
+
 
 @patch("waft.authentication.requests.post")
 def test_get_spotify_access_token_Success(mock_post):
@@ -43,9 +48,10 @@ def test_get_spotify_access_token_HttpError(mock_post):
         asyncio.run(get_spotify_access_token("client_id", "client_secret"))
 
 
-'''
+"""
 Tests for authenticate_spotify_access_token()
-'''
+"""
+
 
 @patch("waft.authentication.requests.get")
 def test_authenticate_spotify_access_token_Success(mock_get):

@@ -1,3 +1,7 @@
+"""
+Unit tests for the functions in src/waft/youtube.py
+"""
+
 import pytest
 from unittest.mock import patch, Mock
 
@@ -5,10 +9,9 @@ from waft.youtube import parse_results_from_json, search_youtube
 from waft.datatypes import DisplayedTrack, YoutubeResult
 
 
-'''
+"""
 Tests for parse_results_from_json()
-'''
-
+"""
 
 
 def test_parse_results_from_json_RemoveNonVideos():
@@ -95,10 +98,9 @@ def test_parse_results_from_json_NoVideos():
     assert results == []
 
 
-
-'''
+"""
 Tests for search_youtube()
-'''
+"""
 
 
 @patch("waft.youtube.parse_results_from_json")
@@ -109,7 +111,7 @@ def test_search_youtube_Success(mock_build, mock_parse):
         artist="Miles Davis",
         album="Relaxin'",
         duration=300000,
-        track_id="1234"
+        track_id="1234",
     )
 
     mock_parse.return_value = ["parsed_result"]
@@ -127,9 +129,7 @@ def test_search_youtube_Success(mock_build, mock_parse):
 
     results = search_youtube(track, api_key="fake_key")
 
-    mock_build.assert_called_once_with(
-        "youtube", "v3", developerKey="fake_key"
-    )
+    mock_build.assert_called_once_with("youtube", "v3", developerKey="fake_key")
 
     mock_search.list.assert_called_once_with(
         part="snippet",
