@@ -4,6 +4,8 @@ This module defines user interface components.
 """
 
 # from rich.progress_bar import ProgressBar
+from pathlib import Path
+
 from rich.table import Table
 from textual.widgets import Static
 from textual.widgets.option_list import Option
@@ -24,7 +26,8 @@ class Logo(Static):
         directory and stores it in ``self.content`` for rendering.
         """
 
-        with open("splashtext.txt", "r", encoding="utf-8") as file:
+        splash_path: Path = Path(__file__).parent / "splashtext.txt"
+        with open(splash_path, "r", encoding="utf-8") as file:
             self.content = file.read()
 
 
