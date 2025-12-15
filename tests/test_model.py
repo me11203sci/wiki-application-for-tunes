@@ -1,21 +1,17 @@
-"""
-Unit tests for the functions in src/waft/model.py
-"""
+"""Unit tests for the functions in src/waft/model.py."""
 
-import pytest
 from pathlib import Path
-from textual.message import Message
 
-from waft.model import ApplicationModel, update
-from waft.messages import UpdateStatus, Authenticating, SearchRequest, UrlSelected
-from waft.datatypes import DisplayedTrack, YoutubeResult
-
-"""
-Helper function to create base model of ApplicationModel to test against
-"""
+from waft.messages import SearchRequest  # type: ignore
+from waft.messages import Authenticating, UpdateStatus, UrlSelected
+from waft.model import ApplicationModel, update  # type: ignore
 
 
 def make_base_model() -> ApplicationModel:
+    """Create a base model for testing.
+
+    Creates a base model to test against.
+    """
     return ApplicationModel(
         active_token="token",
         api_key="api",
@@ -31,12 +27,11 @@ def make_base_model() -> ApplicationModel:
     )
 
 
-"""
-Tests for update()
-"""
+def test_update_update_status():
+    """Unit test for update().
 
-
-def test_update_UpdateStatus():
+    when an UpdateStatus message is sent.
+    """
     model = make_base_model()
     message = UpdateStatus(text="Testing...")
 
@@ -48,7 +43,11 @@ def test_update_UpdateStatus():
     assert new_model is not model
 
 
-def test_update_Authenticating():
+def test_update_authenticating():
+    """Unit test for update().
+
+    when an Authenticating message is sent.
+    """
     model = make_base_model()
     message = Authenticating(state=True)
 
@@ -60,7 +59,11 @@ def test_update_Authenticating():
     assert new_model is not model
 
 
-def test_update_SearchRequest():
+def test_update_search_request():
+    """Unit test for update().
+
+    when a SearchRequest message is sent.
+    """
     model = make_base_model()
     message = SearchRequest(query="Test", mode="spotify")
 
@@ -72,7 +75,11 @@ def test_update_SearchRequest():
     assert new_model is not model
 
 
-def test_update_Other():
+def test_update_other():
+    """Unit test for update().
+
+    when any other message is sent.
+    """
     model = make_base_model()
     message = UrlSelected(index=0)
 

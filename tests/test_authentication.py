@@ -1,22 +1,21 @@
-"""
-Unit tests for the functions in src/waft/authentication.py
-"""
+"""Unit tests for the functions in src/waft/authentication.py."""
 
-import pytest
-from unittest.mock import patch, Mock
-import requests
 import asyncio
+from unittest.mock import Mock, patch
 
-from waft.authentication import *
+import pytest  # type: ignore
+import requests  # type: ignore
 
-
-"""
-Tests for get_spotify_access_token()
-"""
+from waft.authentication import (  # type: ignore
+    authenticate_spotify_access_token, get_spotify_access_token)
 
 
 @patch("waft.authentication.requests.post")
-def test_get_spotify_access_token_Success(mock_post):
+def test_get_spotify_access_token_success(mock_post):
+    """Unit test for get_spotify_access_token().
+
+    when a value should be returned.
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.return_value = None
     mock_resp.json.return_value = {"access_token": "fake_token_123"}
@@ -28,7 +27,11 @@ def test_get_spotify_access_token_Success(mock_post):
 
 
 @patch("waft.authentication.requests.post")
-def test_get_spotify_access_token_Fail(mock_post):
+def test_get_spotify_access_token_fail(mock_post):
+    """Unit test for get_spotify_access_token().
+
+    when it should fail
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.side_effect = requests.HTTPError("400 Bad Request")
     mock_post.return_value = mock_resp
@@ -38,7 +41,11 @@ def test_get_spotify_access_token_Fail(mock_post):
 
 
 @patch("waft.authentication.requests.post")
-def test_get_spotify_access_token_HttpError(mock_post):
+def test_get_spotify_access_token_http_error(mock_post):
+    """Unit test for get_spotify_access_token().
+
+    when a HttpError should be raised.
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.return_value = None
     mock_resp.json.return_value = {}  # missing key
@@ -48,13 +55,12 @@ def test_get_spotify_access_token_HttpError(mock_post):
         asyncio.run(get_spotify_access_token("client_id", "client_secret"))
 
 
-"""
-Tests for authenticate_spotify_access_token()
-"""
-
-
 @patch("waft.authentication.requests.get")
-def test_authenticate_spotify_access_token_Success(mock_get):
+def test_authenticate_spotify_access_token_success(mock_get):
+    """Unit test for authenticate_spotify_access_token().
+
+    when a value should be returned.
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.return_value = None
     mock_resp.json.return_value = {"tracks": {"items": [{"name": "Song"}]}}
@@ -65,7 +71,11 @@ def test_authenticate_spotify_access_token_Success(mock_get):
 
 
 @patch("waft.authentication.requests.get")
-def test_authenticate_spotify_access_token_Fail(mock_get):
+def test_authenticate_spotify_access_token_fail(mock_get):
+    """Unit test for authenticate_spotify_access_token().
+
+    when it should fail.
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.return_value = None
     mock_resp.json.return_value = {"tracks": {"items": []}}
@@ -76,7 +86,11 @@ def test_authenticate_spotify_access_token_Fail(mock_get):
 
 
 @patch("waft.authentication.requests.get")
-def test_authenticate_spotify_access_token_HttpError(mock_get):
+def test_authenticate_spotify_access_token_http_error(mock_get):
+    """Unit test for authenticate_spotify_access_token().
+
+    when a HttpError should be raised.
+    """
     mock_resp = Mock()
     mock_resp.raise_for_status.side_effect = requests.HTTPError("401 Unauthorized")
     mock_get.return_value = mock_resp
@@ -86,7 +100,11 @@ def test_authenticate_spotify_access_token_HttpError(mock_get):
 
 
 @patch("waft.authentication.requests.get")
-def test_authenticate_spotify_access_token_RequestException(mock_get):
+def test_authenticate_spotify_access_token_request_exception(mock_get):
+    """Unit test for authenticate_spotify_access_token().
+
+    when a RequestException should be raised.
+    """
     mock_get.side_effect = requests.RequestException("Connection error")
 
     with pytest.raises(requests.RequestException):

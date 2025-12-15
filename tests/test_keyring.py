@@ -1,25 +1,21 @@
-"""
-Unit tests for the functions in src/waft/keyring.py
-"""
+# pylint: disable=protected-access
+"""Unit tests for the functions in src/waft/keyring.py."""
 
-import pytest
-from unittest.mock import patch, Mock
-from securecredentials.exceptions import (
-    MasterDatabaseNotFoundError,
-    UserDatabaseNotFoundError,
-)
-from typing import Optional, Tuple
+from unittest.mock import patch
 
-from waft.keyring import *
+from securecredentials.exceptions import (  # type: ignore
+    MasterDatabaseNotFoundError, UserDatabaseNotFoundError)
 
-
-"""
-Tests for retrieve_credentials()
-"""
+from waft.keyring import (retrieve_credentials,  # type: ignore
+                          store_credentials)
 
 
 @patch("waft.keyring.SecureCredentials")
-def test_retrieve_credentials_Success(mock_secure):
+def test_retrieve_credentials_success(mock_secure):
+    """Unit test for retrieve_credentials().
+
+    when it should succeed.
+    """
     mock_secure._load_master_key.return_value = None
 
     mock_secure.get_secure.side_effect = [
@@ -34,7 +30,11 @@ def test_retrieve_credentials_Success(mock_secure):
 
 
 @patch("waft.keyring.SecureCredentials")
-def test_retrieve_credentials_MasterDatabaseNotFoundError(mock_secure):
+def test_retrieve_credentials_master_database_not_found_error(mock_secure):
+    """Unit test for retrieve_credentials().
+
+    when the MasterDatabase can't be found.
+    """
     mock_secure._load_master_key.side_effect = MasterDatabaseNotFoundError
 
     mock_secure.generate_master_key.return_value = "master_key"
@@ -54,7 +54,11 @@ def test_retrieve_credentials_MasterDatabaseNotFoundError(mock_secure):
 
 
 @patch("waft.keyring.SecureCredentials")
-def test_retrieve_credentials_UserDatabaseNotFoundError(mock_secure):
+def test_retrieve_credentials_user_database_not_found_error(mock_secure):
+    """Unit test for retrieve_credentials().
+
+    when the UserDatabase can't be found.
+    """
     mock_secure._load_master_key.return_value = None
 
     mock_secure.get_secure.side_effect = UserDatabaseNotFoundError
@@ -64,13 +68,12 @@ def test_retrieve_credentials_UserDatabaseNotFoundError(mock_secure):
     assert creds is None
 
 
-"""
-Tests for store_credentials()
-"""
-
-
 @patch("waft.keyring.SecureCredentials")
-def test_store_credentials_Success(mock_secure):
+def test_store_credentials_success(mock_secure):
+    """Unit test for store_credentials().
+
+    when it should succeed.
+    """
     store_credentials(
         client_id="spotify_id",
         client_secret="spotify_secret",

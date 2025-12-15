@@ -1,21 +1,22 @@
-"""
-Unit tests for the functions in src/waft/spotify.py
-"""
+"""Unit tests for the functions in src/waft/spotify.py."""
 
-import pytest
-from unittest.mock import patch, Mock
-import requests
+from unittest.mock import Mock, patch
 
-from waft.spotify import *
-from waft.datatypes import *
+import pytest  # type: ignore
+import requests  # type: ignore
 
-
-"""
-Tests for parse_tracks_from_json()
-"""
+from waft.datatypes import DisplayedTrack  # type: ignore
+from waft.datatypes import Album, Artist, FullMetadata, Track
+from waft.spotify import parse_album_data  # type: ignore
+from waft.spotify import (get_metadata, parse_artists_data, parse_track_data,
+                          parse_tracks_from_json, spotify_search)
 
 
-def test_parse_tracks_from_json_SingleArtist():
+def test_parse_tracks_from_json_single_artist():
+    """Unit test for parse_tracks_from_json().
+
+    when a single artist is inputted.
+    """
     json_data = {
         "tracks": {
             "items": [
@@ -41,7 +42,11 @@ def test_parse_tracks_from_json_SingleArtist():
     assert track.track_id == "123"
 
 
-def test_parse_tracks_from_json_MultipleArtists():
+def test_parse_tracks_from_json_multiple_artists():
+    """Unit test for parse_tracks_from_json().
+
+    when multiple artists are inputted.
+    """
     json_data = {
         "tracks": {
             "items": [
@@ -65,23 +70,30 @@ def test_parse_tracks_from_json_MultipleArtists():
     assert track.artist == "Artist A and Others"
 
 
-def test_parse_tracks_from_json_KeyError():
+def test_parse_tracks_from_json_key_error():
+    """Unit test for parse_tracks_from_json().
+
+    when a KeyError Exception should be raised.
+    """
     with pytest.raises(KeyError):
         parse_tracks_from_json({})
 
 
-def test_parse_tracks_from_json_TypeError():
+def test_parse_tracks_from_json_type_error():
+    """Unit test for parse_tracks_from_json().
+
+    when a TypeError Exception should be raised.
+    """
     with pytest.raises(TypeError):
         parse_tracks_from_json([])
 
 
-"""
-Tests for spotify_search()
-"""
-
-
 @patch("waft.spotify.requests.get")
-def test_spotify_search_Success(mock_get):
+def test_spotify_search_success(mock_get):
+    """Unit test for spotify_search().
+
+    when a value should be returned.
+    """
     mock_response = Mock()
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = {
@@ -107,7 +119,11 @@ def test_spotify_search_Success(mock_get):
 
 
 @patch("waft.spotify.requests.get")
-def test_spotify_search_HttpError(mock_get):
+def test_spotify_search_http_error(mock_get):
+    """Unit test for spotify_search().
+
+    when an HttpError Exception should be raised.
+    """
     mock_response = Mock()
     mock_response.raise_for_status.side_effect = requests.HTTPError
     mock_get.return_value = mock_response
@@ -116,30 +132,11 @@ def test_spotify_search_HttpError(mock_get):
         spotify_search("Song", "token123", limit=1)
 
 
-"""
-Following two tests implement testing for ValueError, which is in the description for spotify_search(),
-however it is not implemented in spotify_search()
-"""
+def test_parse_album_data_success():
+    """Unit test for parse_album_data().
 
-
-"""
-def test_spotify_search_ValueErrorSong():
-    with pytest.raises(ValueError):
-        spotify_search("", "valid_token", limit=5)
-
-
-def test_spotify_search_ValueErrorToken():
-    with pytest.raises(ValueError):
-        spotify_search("Doxy", "", limit=5)
-        """
-
-
-"""
-Tests for parse_album_data()
-"""
-
-
-def test_parse_album_data_Success():
+    when a value should be returned.
+    """
     json_data = {
         "album": {
             "name": "Album X",
@@ -154,17 +151,20 @@ def test_parse_album_data_Success():
     assert album.image_url == "http://image.url"
 
 
-def test_parse_album_data_KeyError():
+def test_parse_album_data_key_error():
+    """Unit test for parse_album_data().
+
+    when a KeyError Exception should be raised.
+    """
     with pytest.raises(KeyError):
         parse_album_data({})
 
 
-"""
-Tests for parse_artists_data()
-"""
+def test_parse_artists_data_multiple_artists():
+    """Unit test for parse_artists_data().
 
-
-def test_parse_artists_data_MultipleArtists():
+    when multiple artists are inputted.
+    """
     json_data = {
         "artists": [
             {"name": "Artist A"},
@@ -179,17 +179,20 @@ def test_parse_artists_data_MultipleArtists():
     assert artists[0].artist_name == "Artist A"
 
 
-def test_parse_artists_data_KeyError():
+def test_parse_artists_data_key_error():
+    """Unit test for parse_artists_data().
+
+    when a KeyError Exception should be raised.
+    """
     with pytest.raises(KeyError):
         parse_artists_data({})
 
 
-"""
-Tests for parse_track_data()
-"""
-
-
 def test_parse_track_data_success():
+    """Unit test for parse_track_data().
+
+    when a value should be returned correctly.
+    """
     json_data = {
         "duration_ms": 300000,
         "explicit": False,
@@ -208,18 +211,21 @@ def test_parse_track_data_success():
     assert track.track_number == 5
 
 
-def test_parse_track_data_missing_key():
+def test_parse_track_data_key_error():
+    """Unit test for parse_track_data().
+
+    when a KeyError Exception should be raised.
+    """
     with pytest.raises(KeyError):
         parse_track_data({})
 
 
-"""
-Tests for get_metadata()
-"""
-
-
 @patch("waft.spotify.requests.get")
-def test_get_metadata_Success(mock_get):
+def test_get_metadata_success(mock_get):
+    """Unit test for get_metadata().
+
+    when a value should be returned correctly.
+    """
     mock_response = Mock()
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = {
@@ -245,18 +251,30 @@ def test_get_metadata_Success(mock_get):
     assert metadata.artists[0].artist_name == "Artist A"
 
 
-def test_get_metadata_ValueErrorTrack():
+def test_get_metadata_value_error_track():
+    """Unit test for get_metadata().
+
+    when a ValueError Exception should be raised.
+    """
     with pytest.raises(ValueError):
         get_metadata("", "token")
 
 
-def test_get_metadata_ValueErrorToken():
+def test_get_metadata_value_error_token():
+    """Unit test for get_metadata().
+
+    when a ValueError Exception should be raised.
+    """
     with pytest.raises(ValueError):
         get_metadata("track123", "")
 
 
 @patch("waft.spotify.requests.get")
-def test_get_metadata_HttpError(mock_get):
+def test_get_metadata_http_error(mock_get):
+    """Unit test for get_metadata().
+
+    when a HttpError Exception should be raised.
+    """
     mock_response = Mock()
     mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
     mock_get.return_value = mock_response
@@ -266,7 +284,11 @@ def test_get_metadata_HttpError(mock_get):
 
 
 @patch("waft.spotify.requests.get")
-def test_get_metadata_request_RequestException(mock_get):
+def test_get_metadata_request_request_exception(mock_get):
+    """Unit test for get_metadata().
+
+    when a RequestException should be raised.
+    """
     mock_get.side_effect = requests.RequestException("Connection error")
 
     with pytest.raises(requests.RequestException):

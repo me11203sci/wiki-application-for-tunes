@@ -1,20 +1,17 @@
-"""
-Unit tests for the functions in src/waft/youtube.py
-"""
+"""Unit tests for the functions in src/waft/youtube.py."""
 
-import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
-from waft.youtube import parse_results_from_json, search_youtube
-from waft.datatypes import DisplayedTrack, YoutubeResult
+from waft.datatypes import DisplayedTrack, YoutubeResult  # type: ignore
+from waft.youtube import (parse_results_from_json,  # type: ignore
+                          search_youtube)
 
 
-"""
-Tests for parse_results_from_json()
-"""
+def test_parse_results_from_json_remove_non_videos():
+    """Unit test for parse_results_from_json().
 
-
-def test_parse_results_from_json_RemoveNonVideos():
+    when there is a non video inputted.
+    """
     response = {
         "items": [
             {
@@ -46,7 +43,11 @@ def test_parse_results_from_json_RemoveNonVideos():
     assert results[0].url == "https://www.youtube.com/watch?v=abc123"
 
 
-def test_parse_results_from_json_MultipleVideos():
+def test_parse_results_from_json_multiple_videos():
+    """Unit test for parse_results_from_json().
+
+    when multiple videos are inputted.
+    """
     response = {
         "items": [
             {
@@ -73,7 +74,11 @@ def test_parse_results_from_json_MultipleVideos():
     assert results[1].url.endswith("id2")
 
 
-def test_parse_results_from_json_NoVideos():
+def test_parse_results_from_json_no_videos():
+    """Unit test for parse_results_from_json().
+
+    when no videos are inputted.
+    """
     response = {
         "items": [
             {
@@ -95,17 +100,16 @@ def test_parse_results_from_json_NoVideos():
 
     results = parse_results_from_json(response)
 
-    assert results == []
-
-
-"""
-Tests for search_youtube()
-"""
+    assert not results
 
 
 @patch("waft.youtube.parse_results_from_json")
 @patch("waft.youtube.googleapiclient.discovery.build")
-def test_search_youtube_Success(mock_build, mock_parse):
+def test_search_youtube_success(mock_build, mock_parse):
+    """Unit test for search_youtube().
+
+    when it should succeed.
+    """
     track = DisplayedTrack(
         title="Doxy",
         artist="Miles Davis",

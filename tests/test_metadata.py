@@ -1,25 +1,22 @@
-"""
-Unit tests for the functions in src/waft/metadata.py
-"""
+"""Unit tests for the functions in src/waft/metadata.py."""
 
-import pytest
-from unittest.mock import patch, Mock, MagicMock
 from pathlib import Path
-from eyed3.id3.frames import ImageFrame
+from unittest.mock import MagicMock, Mock, patch
 
-from waft.metadata import *
-from waft.datatypes import DisplayedTrack
+from eyed3.id3.frames import ImageFrame  # type: ignore
 
-
-"""
-Tests for write_metadata()
-"""
+from waft.datatypes import DisplayedTrack  # type: ignore
+from waft.metadata import write_metadata  # type: ignore
 
 
 @patch("waft.metadata.urlopen")
 @patch("waft.metadata.eyed3.load")
 @patch("waft.metadata.music_tag.load_file")
-def test_write_metadata_Success(mock_load_file, mock_eyed3_load, mock_urlopen):
+def test_write_metadata_success(mock_load_file, mock_eyed3_load, mock_urlopen):
+    """Unit test for write_metadata().
+
+    when it should succeed.
+    """
     path = Path("test_song")
     image_url = "http://example.com/cover.jpg"
 
