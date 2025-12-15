@@ -1,14 +1,22 @@
+"""
+Unit tests for the functions in src/waft/keyring.py
+"""
+
 import pytest
 from unittest.mock import patch, Mock
-from securecredentials.exceptions import MasterDatabaseNotFoundError, UserDatabaseNotFoundError
+from securecredentials.exceptions import (
+    MasterDatabaseNotFoundError,
+    UserDatabaseNotFoundError,
+)
 from typing import Optional, Tuple
 
 from waft.keyring import *
 
 
-'''
+"""
 Tests for retrieve_credentials()
-'''
+"""
+
 
 @patch("waft.keyring.SecureCredentials")
 def test_retrieve_credentials_Success(mock_secure):
@@ -56,9 +64,9 @@ def test_retrieve_credentials_UserDatabaseNotFoundError(mock_secure):
     assert creds is None
 
 
-'''
+"""
 Tests for store_credentials()
-'''
+"""
 
 
 @patch("waft.keyring.SecureCredentials")
@@ -69,14 +77,10 @@ def test_store_credentials_Success(mock_secure):
         youtube_api_key="youtube_key",
     )
 
-    mock_secure.set_secure.assert_any_call(
-        field="SPOTIFY ID", plaintext="spotify_id"
-    )
+    mock_secure.set_secure.assert_any_call(field="SPOTIFY ID", plaintext="spotify_id")
     mock_secure.set_secure.assert_any_call(
         field="SPOTIFY SECRET", plaintext="spotify_secret"
     )
-    mock_secure.set_secure.assert_any_call(
-        field="YOUTUBE KEY", plaintext="youtube_key"
-    )
+    mock_secure.set_secure.assert_any_call(field="YOUTUBE KEY", plaintext="youtube_key")
 
     assert mock_secure.set_secure.call_count == 3
