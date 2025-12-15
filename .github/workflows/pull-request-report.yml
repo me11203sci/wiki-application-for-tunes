@@ -30,63 +30,63 @@ jobs:
       - name: Run Black Formatter
         run: |
           echo "## BLACK" >> analysis.log
-          echo "~~~" >> analysis.log
-          black --check src/ >> analysis.log 2>&1
-          black --check tests/ >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          black --check src/ >> analysis.log 2>&1 || true
+          black --check tests/ >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run isort Formatter
         run: |
           echo "## ISORT" >> analysis.log
-          echo "~~~" >> analysis.log
-          isort src/ --diff --check-only >> analysis.log 2>&1
-          isort tests/ --diff --check-only >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          isort src/ --diff --check-only >> analysis.log 2>&1 || true
+          isort tests/ --diff --check-only >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run flake8 for Style Compliance
         run: |
           echo "## FLAKE8" >> analysis.log
-          echo "~~~" >> analysis.log
-          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 src/ >> analysis.log 2>&1
-          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 tests/ >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 src/ >> analysis.log 2>&1 || true
+          flake8 --max-line-length=88 --verbose --docstring-convention=numpy --ignore=D202 tests/ >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run mypy for Type Checking
         run: |
           echo "## MYPY" >> analysis.log
-          echo "~~~" >> analysis.log
-          mypy src/ >> analysis.log 2>&1
-          mypy tests/ >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          mypy src/ >> analysis.log 2>&1 || true
+          mypy tests/ >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run pylint for for Code Smell Checks
         run: |
-          echo "## PYLINT " >> analysis.log
-          echo "~~~" >> analysis.log
-          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 src/ >> analysis.log 2>&1
-          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 tests/ >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo "## PYLINT" >> analysis.log
+          echo '```' >> analysis.log
+          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 src/ >> analysis.log 2>&1 || true
+          pylint --max-line-length=88 --disable=too-many-instance-attributes --max-args=6 --max-positional-arguments=6 tests/ >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run Pytest via Coverage.py
         run: |
           echo "## PYTEST & COVERAGE" >> analysis.log
-          echo "~~~" >> analysis.log
-          coverage run --source=src/waft -m pytest >> analysis.log 2>&1
-          coverage report >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          coverage run --source=src/waft -m pytest >> analysis.log 2>&1 || true
+          coverage report >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Run interrogate
         run: |
           echo "## INTERROGATE" >> analysis.log
-          echo "~~~" >> analysis.log
-          interrogate --verbose >> analysis.log 2>&1
-          echo "~~~" >> analysis.log
+          echo '```' >> analysis.log
+          interrogate --verbose >> analysis.log 2>&1 || true
+          echo '```' >> analysis.log
         continue-on-error: true
 
       - name: Output Log to Terminal
@@ -109,22 +109,21 @@ jobs:
             const { owner, repo } = context.repo;
             const prNumber = context.payload.pull_request?.number;
 
+            if (!prNumber) {
+              core.warning("No pull request context found; skipping comment.");
+              return;
+            }
+
             const comments = await github.rest.issues.listComments({
               owner,
               repo,
               issue_number: prNumber
             });
 
-            const existing = comments.data.find(c => c.user.login === 'github-actions[bot]')
+            const existing = comments.data.find(c => c.user.login === 'github-actions[bot]');
             const fs = require('fs');
-            const runId = process.env.GITHUB_RUN_ID;
 
-            if (!prNumber) {
-              core.warning("No pull request context found; skipping comment.");
-              return;
-            }
-
-            const commentBody = fs.readFileSync('analysis.log', 'utf8') + "\n\n>[!NOTE]\n> Reviewers are to be sure to copy the checklist found in the [Pull Request Review section of the README](https://github.com/me11203sci/wiki-application-for-tunes?tab=readme-ov-file#pull-request-review) in their review comment.";
+            const commentBody = fs.readFileSync('analysis.log', 'utf8') + "\n\n> [!NOTE]\n> Reviewers are to be sure to copy the checklist found in the [Pull Request Review section of the README](https://github.com/me11203sci/wiki-application-for-tunes?tab=readme-ov-file#pull-request-review) in their review comment.";
 
             if (existing) {
               await github.rest.issues.updateComment({

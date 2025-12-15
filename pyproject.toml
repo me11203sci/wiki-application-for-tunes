@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "waft"
-version = "0.1.1"
+dynamic = ["version"]
 description = 'A textual user interface application that facilitates the association of files in the MP3 format with metadd.'
 readme = "README.md"
 requires-python = ">=3.8"
@@ -46,6 +46,9 @@ waft = "waft.waft:waft"
 Documentation = "https://github.com/me11203sci/wiki-application-for-tunes/blob/master/README.md"
 Issues = "https://github.com/me11203sci/wiki-application-for-tunes/issues"
 Source = "https://github.com/me11203sci/wiki-application-for-tunes"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
