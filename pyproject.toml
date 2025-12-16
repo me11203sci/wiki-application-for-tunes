@@ -37,6 +37,7 @@ dependencies = [
   "types-requests",
   "types-yt-dlp",
   "yt-dlp",
+  "pymongo",
 ]
 
 [project.scripts]

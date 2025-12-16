@@ -392,6 +392,20 @@ class AudioSource(ModalScreen):
         suggestions_view.clear_options()
         suggestions_view.add_options(suggestions)
 
+    def set_default_url(self, url: str) -> None:
+        """Set a default URL value in the input field.
+
+        Populates the URL input field with a default value, typically used
+        to pre-fill the field with a suggested or previously used URL.
+
+        Parameters
+        ----------
+        url : str
+            The default URL string to display in the input field.
+        """
+        url_field: Input = self.query_one("#url_field", Input)
+        url_field.value = url
+
     def on_key(self, event: events.Key) -> None:
         """Handle keyboard events for modal navigation and URL submission.
 
@@ -404,11 +418,12 @@ class AudioSource(ModalScreen):
             The keyboard event containing the pressed key.
         """
 
+        focused = self.screen.focused
         if event.key == "escape":
             # Prevent Input from processing it.
             event.stop()
             self.app.pop_screen()
-        elif event.key == "enter":
+        elif event.key == "enter" and focused.id == "url_field":  # type: ignore
             url = self.query_one("#url_field", Input).value.strip()
             if not url:  # add validation
                 return

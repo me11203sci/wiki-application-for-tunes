@@ -44,6 +44,7 @@ class ApplicationModel:  # pylint: disable=too-many-instance-attributes
     authenticating: bool
     developer_key: str
     downloads_folder: Path
+    url_found: bool
     search_query: Tuple[str, str]
     search_results: List[DisplayedTrack]
     selection: DisplayedTrack
