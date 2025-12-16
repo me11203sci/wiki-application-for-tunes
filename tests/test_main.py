@@ -1,7 +1,7 @@
 """Test waft package functionality."""
 
-from waft.__about__ import __version__
-from waft.application import Application
+from waft.__about__ import __version__  # type: ignore
+from waft.application import Application  # type: ignore
 
 
 def test_application_exists():
