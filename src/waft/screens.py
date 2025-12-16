@@ -7,6 +7,7 @@ the application.
 """
 
 from asyncio import gather
+from dataclasses import replace
 from typing import List, Optional, Tuple
 
 from rich.columns import Columns
@@ -102,6 +103,14 @@ class IntitialAuthenticationScreen(Screen):
             return
 
         store_credentials(client_id, client_secret, api_key)
+
+        model: ApplicationModel = self.app.model  # type: ignore[attr-defined]
+
+        if model is not None:
+            model = replace(  # type: ignore[attribute-defined-outside-init]
+                model, active_token=result[0]  # type: ignore
+            )
+
         self.app.post_message(ValidCredentials())
         self.app.post_message(UpdateStatus("Success."))
 
