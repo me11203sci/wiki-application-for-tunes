@@ -13,6 +13,7 @@ from textual.app import App
 from textual.css.query import NoMatches
 
 from waft.authentication import get_spotify_access_token
+from waft.database import get_yt_url, upload_relation
 from waft.datatypes import DisplayedTrack
 from waft.keyring import retrieve_credentials
 from waft.messages import (Authenticating, SearchRequest, StartDownload,
@@ -22,7 +23,7 @@ from waft.screens import (AudioSource, IntitialAuthenticationScreen,
                           SpotifySearchScreen)
 from waft.spotify import get_metadata, spotify_search
 from waft.utils import (create_options_from_results,
-                        create_options_from_suggestions)
+                        create_options_from_suggestions, hash_file)
 from waft.widgets import DownloadOption, StatusBar
 from waft.youtube import search_youtube
 from waft.ytdlp import download_track
@@ -49,6 +50,7 @@ class Application(App):
             authenticating=False,
             downloads_folder=Path.home() / "Music/waft/",
             developer_key="",
+            url_found=False,
             search_query=("", ""),
             search_results=[],
             selection=DisplayedTrack("", "", "", "", ""),
@@ -199,6 +201,12 @@ class Application(App):
                 create_options_from_suggestions(suggestion_results)
             )
 
+            suggested_url = get_yt_url(self.model.selection)
+
+            if suggested_url:
+                self.model = replace(self.model, url_found=True)
+                self.screen.set_default_url(suggested_url)
+
     async def on_url_selected(self, message: UrlSelected) -> None:
         """Handle YouTube U.R.L. selection and initiate download.
 
@@ -231,10 +239,12 @@ class Application(App):
         - Runs the download in a worker thread to avoid blocking the U.I.
         """
 
-        # Get image.
-        image_url = get_metadata(
+        track_metadata = get_metadata(
             self.model.selection.track_id, self.model.active_token
-        ).album.image_url
+        )
+
+        # Get image.
+        image_url = track_metadata.album.image_url
 
         # Add option to view.
         title = self.model.selection.title
@@ -245,11 +255,14 @@ class Application(App):
                 # create_option_from_download(self.model.selection)
                 option
             )
+
+        file_path: Path = Path(self.model.downloads_folder, f"{title}")
+
         # Download song.
         self.run_worker(
             download_track(
                 message.url,
-                Path(self.model.downloads_folder, f"{title}"),
+                file_path,
                 self.model.selection,
                 image_url,
             ),
@@ -257,6 +270,10 @@ class Application(App):
         )
 
         # Call to Database
+        if not self.model.url_found:
+            upload_relation(
+                track_metadata, message.url, hash_file(Path(f"{file_path}.mp3"))
+            )
 
     async def action_submit_authentication(self) -> None:
         """Trigger authentication submission workflow.
