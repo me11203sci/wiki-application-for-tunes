@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from waft.datatypes import DisplayedTrack
 from waft.messages import SearchRequest  # type: ignore
 from waft.messages import Authenticating, UpdateStatus, UrlSelected
 from waft.model import ApplicationModel, update  # type: ignore
@@ -17,10 +18,11 @@ def make_base_model() -> ApplicationModel:
         api_key="api",
         authenticating=False,
         developer_key="dev",
+        url_found=False,
         downloads_folder=Path("/tmp"),
         search_query=("", ""),
         search_results=[],
-        selection=None,
+        selection=DisplayedTrack("", "", "", "", ""),
         suggestion_results=[],
         status_message="",
         valid_credentials=False,

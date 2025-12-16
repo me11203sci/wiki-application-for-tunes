@@ -4,7 +4,9 @@ This module provides helper functions for converting data structures into
 Textual U.I. components and formatting time values for display.
 """
 
+import hashlib
 from datetime import timedelta
+from pathlib import Path
 from typing import List
 
 from rich.table import Table
@@ -128,3 +130,26 @@ def create_options_from_suggestions(suggestions: List[YoutubeResult]) -> List[Op
         options.append(Option(table))
 
     return options
+
+
+def hash_file(file_path: Path) -> str:
+    """Calculate SHA256 hash of a file's contents.
+
+    Parameters
+    ----------
+    file_path : Path
+        Path to the file to hash.
+
+    Returns
+    -------
+    str
+        Hexadecimal string representation of the file's SHA256 hash.
+    """
+    sha256_hash = hashlib.sha256()
+
+    # Read file in chunks to handle large files efficiently
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(chunk)
+
+    return sha256_hash.hexdigest()

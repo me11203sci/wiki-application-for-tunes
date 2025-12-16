@@ -11,12 +11,11 @@ from pymongo.cursor import Cursor
 from pymongo.database import Database
 from pymongo.results import InsertOneResult
 
-from waft.datatypes import Album, Artist, FullMetadata, Track
+from waft.datatypes import Album, Artist, DisplayedTrack, FullMetadata, Track
 
 
 def upload_relation(metadata: FullMetadata, yt_link: str, file_hash: str) -> None:
-    """
-    Upload a complete music metadata relation into the MongoDB database.
+    """Upload a complete music metadata relation into the MongoDB database.
 
     This function decomposes a `FullMetadata` object into its component entities
     (Album, Track, Artist) and inserts them into their respective collections.
@@ -44,9 +43,10 @@ def upload_relation(metadata: FullMetadata, yt_link: str, file_hash: str) -> Non
     pymongo.errors.PyMongoError
         If any database insertion or connection operation fails.
     """
-    con_str: str = """\
-    mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass\
-    @wiki-app-for-tunes.5juoymq.mongodb.net/"""
+    con_str: str = (
+        "mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass"
+        "@wiki-app-for-tunes.5juoymq.mongodb.net/"
+    )
     client: MongoClient = MongoClient(con_str)
 
     db: Database = client["Wiki-App-DB"]
@@ -93,7 +93,7 @@ def upload_relation(metadata: FullMetadata, yt_link: str, file_hash: str) -> Non
     )
 
 
-def get_yt_url(metadata: FullMetadata) -> str | None:
+def get_yt_url(partial_metadata: DisplayedTrack) -> str | None:
     """
     Retrieve a YouTube URL by matching metadata attributes in the database.
 
@@ -119,16 +119,28 @@ def get_yt_url(metadata: FullMetadata) -> str | None:
     pymongo.errors.PyMongoError
         If a database query or connection fails.
     """
+    metadata: FullMetadata = FullMetadata(
+        Album(partial_metadata.album, ""),
+        [Artist(partial_metadata.artist)],
+        Track(
+            "",
+            False,
+            partial_metadata.title,
+            "33",
+            0,
+        ),
+    )
     track_name: str = metadata.track.name
-    release_date: str = metadata.track.release_date
+    # release_date: str = metadata.track.release_date
     album_name: str = metadata.album.album_name
     artist_names: List[str] = []
     for artist in metadata.artists:
         artist_names.append(artist.artist_name)
 
-    con_str: str = """\
-    mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass\
-    @wiki-app-for-tunes.5juoymq.mongodb.net/"""
+    con_str: str = (
+        "mongodb+srv://lpdh3m_db_user:wiki_app_for_tunes_pass"
+        "@wiki-app-for-tunes.5juoymq.mongodb.net/"
+    )
     client: MongoClient = MongoClient(con_str)
     db: Database = client["Wiki-App-DB"]
 
@@ -140,9 +152,7 @@ def get_yt_url(metadata: FullMetadata) -> str | None:
     track_collection = db["Track"]
 
     # groupings of entities that match the given metadata
-    candidate_tracks: Cursor = track_collection.find(
-        {"Name": track_name, "ReleaseDate": release_date}
-    )
+    candidate_tracks: Cursor = track_collection.find({"Name": track_name})
     candidate_albums: Cursor = album_collection.find({"Name": album_name})
     candidate_artists: Cursor = artist_collection.find({"Name": {"$in": artist_names}})
     candidate_artists_names: List[str] = []
@@ -152,8 +162,8 @@ def get_yt_url(metadata: FullMetadata) -> str | None:
     # list of track ids that are associated with a candidate album_name
     for track_doc in candidate_tracks:
         track_id: str = track_doc["_id"]
-        on_doc = on_collection.find_one({"TrackID": track_id}) # type: ignore
-        album_id: str = on_doc["AlbumID"] # type: ignore
+        on_doc = on_collection.find_one({"TrackID": track_id})  # type: ignore
+        album_id: str = on_doc["AlbumID"]  # type: ignore
         match_exists: bool = False
         for album_doc in candidate_albums:
             album_doc_id: str = album_doc["_id"]
@@ -169,12 +179,12 @@ def get_yt_url(metadata: FullMetadata) -> str | None:
             matched_artist = artist_collection.find_one(  # type: ignore
                 {"_id": artist_id}
             )
-            if matched_artist["Name"] in candidate_artists_names: # type: ignore
+            if matched_artist["Name"] in candidate_artists_names:  # type: ignore
                 # We matched Track Name, release date, Album name, and 1+ Artist names
                 # Find File with track_id
                 file_doc = file_collection.find_one(  # type: ignore
                     {"TrackID": track_id}
                 )
-                link = file_doc["SourceLink"] # type: ignore
+                link = file_doc["SourceLink"]  # type: ignore
                 return link
     return None  # Nothing was matched
