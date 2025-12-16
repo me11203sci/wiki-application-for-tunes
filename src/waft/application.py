@@ -169,7 +169,7 @@ class Application(App):
         if isinstance(self.screen, SpotifySearchScreen):
             self.screen.display_results(create_options_from_results(search_results))
 
-        self.model = replace(self.model, search_results=search_results)
+        self.model = replace(self.model, url_found=False, search_results=search_results)
 
     async def on_track_selected(self, message: TrackSelected) -> None:
         """Handle track selection and fetch YouTube audio source suggestions.
