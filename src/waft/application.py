@@ -259,7 +259,7 @@ class Application(App):
         file_path: Path = Path(self.model.downloads_folder, f"{title}")
 
         # Download song.
-        self.run_worker(
+        _ = self.run_worker(
             download_track(
                 message.url,
                 file_path,
@@ -267,7 +267,7 @@ class Application(App):
                 image_url,
             ),
             thread=True,
-        )
+        ).result
 
         # Call to Database
         if not self.model.url_found:
