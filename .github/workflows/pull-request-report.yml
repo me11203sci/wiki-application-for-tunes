@@ -76,8 +76,8 @@ jobs:
         run: |
           echo "## PYTEST & COVERAGE" >> analysis.log
           echo '```' >> analysis.log
-          pytest
-          pytest --cov=waft tests/
+          pytest >> analysis.log 2>&1 || true
+          pytest --cov=waft tests/ >> analysis.log 2>&1 || true
           echo '```' >> analysis.log
         continue-on-error: true
 
